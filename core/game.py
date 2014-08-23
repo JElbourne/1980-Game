@@ -30,3 +30,6 @@ class Game(pyglet.window.Window):
     def on_close(self):
         print ("Closed Window,Bye!")
         pyglet.app.exit()
+
+    def update(self, dt):
+        self.controller.update(dt)
