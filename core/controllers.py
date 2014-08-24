@@ -11,6 +11,7 @@ from functools import partial
 import pyglet
 
 from core.views import MainMenuView
+from core.views import GameMapView
 
 
 class Controller(object):
@@ -48,7 +49,7 @@ class Controller(object):
         self.window.push_handlers(self)
         self.setup()
 
-    def pop_handelrs(self):
+    def pop_handlers(self):
         if self.current_view:
             self.current_view.pop_handlers()
         self.window.pop_handlers()
@@ -61,8 +62,37 @@ class MainMenuController(Controller):
         self.setup = partial(self.switch_view_class, MainMenuView)
 
     def start_game(self):
-        print ("You Started the game. Good Luck!")
+        self.switch_controller_class(GameController)
 
     def exit_game(self):
         print ("Shutting down the Game, Good Bye!")
         pyglet.app.exit()
+
+
+class GameController(Controller):
+    def __init__(self, *args, **kwargs):
+        super(GameController, self).__init__(*args, **kwargs)
+
+        self.world = None
+        self.player = None
+
+    def update(self, dt):
+        pass
+
+    def setup(self):
+        self.switch_view_class(GameMapView)
+        return True
+
+    def push_handlers(self):
+        if self.setup():
+            self.window.push_handlers(self)
+        else:
+            self.switch_controller_class(MainMenuController)
+
+
+
+
+
+
+
+

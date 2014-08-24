@@ -35,7 +35,7 @@ class View(pyglet.event.EventDispatcher):
         self.fontNormal = fN = pyglet.font.load(self.fontName, self.fontSizeMd)
         self.fontLarge = fL = pyglet.font.load(self.fontName, self.fontSizeLg)
         self.lineHeightSmall = fS.ascent - fS.descent + self.leading
-        self.lineHeightNorm  = fN.ascent - fN.descent + self.leading
+        self.lineHeightNorm = fN.ascent - fN.descent + self.leading
         self.lineHeightLarge = fL.ascent - fL.descent + self.leading
 
         self.menuSpacing = self.lineHeightLarge
@@ -90,7 +90,6 @@ class MenuView(View):
         if yCoord in self._yCoordToKeyMap:
             command = self._yCoordToKeyMap[yCoord]
         return command
-
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.UP:
@@ -161,3 +160,8 @@ class MainMenuView(MenuView):
                               x=64, y=y, batch=self.batch)
 
         self.minCursorY = y
+
+
+class GameMapView(View):
+    def setup(self):
+        print ("In the Game View")
