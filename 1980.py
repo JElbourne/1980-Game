@@ -14,11 +14,10 @@ from core.game import Game
 
 
 def main():
-
-    game = Game(width=1280, \
-                height=768, \
-                caption="1980 Game", \
-                visible=False \
+    game = Game(width=1280,
+                height=768,
+                caption="1980 Game",
+                visible=False
                 )
 
     pyglet.app.run()
