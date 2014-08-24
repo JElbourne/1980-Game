@@ -22,11 +22,11 @@ class View(pyglet.event.EventDispatcher):
         pass
 
     def push_handlers(self):
-        self.controller.window.push_handlers()
+        self.controller.window.push_handlers(self)
         self.setup()
 
     def pop_handlers(self):
-        self.controller.window.pop_handler()
+        self.controller.window.pop_handlers()
 
     def _clear(self):
         self.controller.window.clear()
@@ -40,6 +40,7 @@ class View(pyglet.event.EventDispatcher):
 
 View.register_event_type('on_key_press')
 
+
 class MenuView(View):
     def setup(self):
         self.cmdMap = {}
@@ -49,6 +50,7 @@ class MenuView(View):
 
     def get_selected_command(self):
         pass
+
 
 class MainMenuView(MenuView):
     def setup(self):
