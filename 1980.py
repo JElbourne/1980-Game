@@ -14,12 +14,15 @@ from core.game import Game
 
 
 def main():
+    # Create the Game Instance
     game = Game(width=1280,
                 height=768,
                 caption="1980 Game",
                 visible=False
                 )
-
+    print ("Game instance created with window size: {}x{}".format(game.width,
+                                                                  game.height))
+    # Start the pyglet app
     pyglet.app.run()
 
 

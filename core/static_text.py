@@ -6,6 +6,7 @@ Created by Jason Elbourne on 2014-08-23.
 Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
+# Main Menu View uses this data to construct Labels for displaying in window.
 MAIN_MENU_TEXT = {
     "title": [
         "@@@  @@@@@@   @@@@@@   @@@@@@ ",

@@ -23,6 +23,7 @@ class Controller(object):
         pass
 
     def update(self, dt):
+        # if this is called we will call the current_view's update method.
         if self.current_view:
             self.current_view.update(dt)
 
@@ -50,6 +51,7 @@ class Controller(object):
         self.setup()
 
     def pop_handlers(self):
+        # We are done with view so remove the stack level for the view.
         if self.current_view:
             self.current_view.pop_handlers()
         self.window.pop_handlers()
@@ -58,13 +60,18 @@ class Controller(object):
 class MainMenuController(Controller):
     def __init__(self, *args, **kwargs):
         super(MainMenuController, self).__init__(*args, **kwargs)
-
+        # Use partial to prepare the function to switch view. Much Faster.
         self.setup = partial(self.switch_view_class, MainMenuView)
+        ## TODO add more menu options and views. ie. Options, Controls, Help
 
     def start_game(self):
+        # Start Game has been selected so we run the method to switch
+        # controllers over to Game Controller.
         self.switch_controller_class(GameController)
 
     def exit_game(self):
+        # Exit game has been selected so we should take hte oportunity to
+        # clean up and save any data then exist the application.
         print ("Shutting down the Game, Good Bye!")
         pyglet.app.exit()
 
@@ -80,19 +87,15 @@ class GameController(Controller):
         pass
 
     def setup(self):
+        print ("game setting up...")
+        # The first view in the game will be the GameMapView
         self.switch_view_class(GameMapView)
         return True
 
     def push_handlers(self):
         if self.setup():
+            # If self.setup() did complete add the Game handlers to the stack.
             self.window.push_handlers(self)
         else:
+            # If not switch back to the MainMenuController
             self.switch_controller_class(MainMenuController)
-
-
-
-
-
-
-
-
