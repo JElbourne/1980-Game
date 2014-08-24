@@ -11,13 +11,14 @@ Copyright (c) 2014 Jason Elbourne. All rights reserved.
 import pyglet
 
 from core.game import Game
+from core.config import CONFIG
 
 
 def main():
     # Create the Game Instance
-    game = Game(width=1280,
-                height=768,
-                caption="1980 Game",
+    game = Game(width=CONFIG["windowWidth"],
+                height=CONFIG["windowHeight"],
+                caption=CONFIG["appName"],
                 visible=False
                 )
     print ("Game instance created with window size: {}x{}".format(game.width,

@@ -13,7 +13,7 @@ import pyglet
 from pyglet.window import key
 
 from core.static_text import MAIN_MENU_TEXT
-
+from core.config import CONFIG
 
 class View(object):
     def __init__(self, controller):
@@ -26,10 +26,10 @@ class View(object):
         self.minCursorY = None
         self.maxCursorY = None
 
-        self.fontName = "Courier New"
-        self.fontSizeSm = 12
-        self.fontSizeMd = 16
-        self.fontSizeLg = 20
+        self.fontName = CONFIG["fontName"]
+        self.fontSizeSm = CONFIG["fontSizeSm"]
+        self.fontSizeMd = CONFIG["fontSizeMd"]
+        self.fontSizeLg = CONFIG["fontSizeLg"]
         self.leading = 2
         self.fontSmall = fS = pyglet.font.load(self.fontName, self.fontSizeSm)
         self.fontNormal = fN = pyglet.font.load(self.fontName, self.fontSizeMd)
