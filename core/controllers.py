@@ -3,8 +3,11 @@
 controllers.py
 """
 
+from functools import partial
 
 import pyglet
+
+from core.views import MainMenuView
 
 
 class Controller(object):
@@ -52,5 +55,11 @@ class MainMenuController(Controller):
     def __init__(self, *args, **kwargs):
         super(MainMenuController, self).__init__(*args, **kwargs)
 
-    def setup(self):
-        print ("We are at the main menu.")
+        self.setup = partial(self.switch_view_class, MainMenuView)
+
+    def start_game(self):
+        pass
+
+    def exit_game(self):
+        print ("Shutting down the Game, Good Bye!")
+        pyglet.app.exit()

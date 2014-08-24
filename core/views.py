@@ -38,4 +38,27 @@ class View(pyglet.event.EventDispatcher):
     def on_key_pressed(self, key, modifiers):
         self.dispatch_event("on_key_press", key, modifiers)
 
-View.register_event_type('on_key_pressed')
+View.register_event_type('on_key_press')
+
+class MenuView(View):
+    def setup(self):
+        self.cmdMap = {}
+
+    def move_cursor(self, direction):
+        pass
+
+    def get_selected_command(self):
+        pass
+
+class MainMenuView(MenuView):
+    def setup(self):
+        self.cmdMap = {
+            "start": self.controller.start_game,
+            "exit": self.controller.exit_game
+        }
+        print ("IN Main Menu View")
+
+    def on_key_press(self, key, modifiers):
+        pass
+
+
