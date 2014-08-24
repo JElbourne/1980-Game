@@ -23,13 +23,14 @@ class Game(pyglet.window.Window):
 
     def switch_controller(self, new_controller):
         if self.controller:
-            self.controller.pop_handler()
+            self.controller.pop_handlers()
         self.controller = new_controller
-        self.controller.push_handler()
+        self.controller.push_handlers()
 
     def on_close(self):
         print ("Closed Window,Bye!")
         pyglet.app.exit()
 
     def update(self, dt):
-        self.controller.update(dt)
+        if self.controller:
+            self.controller.update(dt)
