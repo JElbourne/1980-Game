@@ -61,7 +61,7 @@ class MainMenuController(Controller):
         self.setup = partial(self.switch_view_class, MainMenuView)
 
     def start_game(self):
-        pass
+        print ("You Started the game. Good Luck!")
 
     def exit_game(self):
         print ("Shutting down the Game, Good Bye!")

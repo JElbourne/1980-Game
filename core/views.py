@@ -10,6 +10,7 @@ import datetime
 import random
 
 import pyglet
+from pyglet.window import key
 
 from core.static_text import MAIN_MENU_TEXT
 
@@ -72,10 +73,36 @@ class MenuView(View):
         self.cmdMap = {}
 
     def move_cursor(self, direction):
-        pass
+        if direction >= 1:
+            if self.cursor.y + self.menuSpacing <= self.maxCursorY:
+                self.cursor.y += self.menuSpacing
+            else:
+                self.cursor.y = self.minCursorY
+        else:
+            if self.cursor.y - self.menuSpacing >= self.minCursorY:
+                self.cursor.y -= self.menuSpacing
+            else:
+                self.cursor.y = self.maxCursorY
 
     def get_selected_command(self):
-        pass
+        command = None
+        yCoord = self.cursor.y
+        if yCoord in self._yCoordToKeyMap:
+            command = self._yCoordToKeyMap[yCoord]
+        return command
+
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.UP:
+            # Move the cursor up
+            self.move_cursor(1)
+        if symbol == key.DOWN:
+            # Move the cursor down
+            self.move_cursor(-1)
+        if symbol == key.ENTER:
+            # Move the cursor up
+            cmd = self.get_selected_command()
+            self.cmdMap[str(cmd)]()
 
 
 class MainMenuView(MenuView):
@@ -134,6 +161,3 @@ class MainMenuView(MenuView):
                               x=64, y=y, batch=self.batch)
 
         self.minCursorY = y
-
-    def on_key_press(self, key, modifiers):
-        pass
