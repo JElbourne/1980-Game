@@ -36,12 +36,12 @@ class Character(Enitity):
 
 
 class Player(Character):
-    def __init__(self, armour, speed, strength, hunger, gold, angle, **kwargs):
+    def __init__(self, race, class_, alignment, gender, intelligence, wisdom, **kwargs):
         super(Player, self).__init__(**kwargs)
-        self.armour = armour
-        self.maxArmour = armour
-        self.speed = speed
-        self.strength = strength
-        self.hunger = hunger
-        self.maxHunger = hunger
-        self.gold = gold
+        self.race = race
+        self.class_ = class_
+        self.alignment = alignment
+        self.gender = gender
+
+        self.intelligence = intelligence
+        self.wisdom = wisdom
