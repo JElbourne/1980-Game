@@ -3,6 +3,8 @@
 entity.py
 """
 
+import pyglet
+
 
 class Enitity(object):
     def __init__(self, name, hp, lightLevel, level):
@@ -17,8 +19,14 @@ class Enitity(object):
 
 
 class Character(Enitity):
-    def __init__(self, armour, speed, strength, hunger, gold, angle, **kwargs):
-        super(Character, self).__init__(**kwargs)
+
+    batch = pyglet.graphics.Batch()
+
+    def __init__(self, armour=20, speed=30, strength=10, hunger=10, gold=0,
+                 angle=0, race="human", class_="Rogue", alignment="Neutral",
+                 gender="Male", intelligence=10, wisdom=10, **kwargs):
+        super(Character, self).__init__(name="Vladic", hp="17", lightLevel=8,
+                                        level=0, **kwargs)
         self.armour = armour
         self.maxArmour = armour
         self.speed = speed
@@ -26,6 +34,12 @@ class Character(Enitity):
         self.hunger = hunger
         self.maxHunger = hunger
         self.gold = gold
+        self.race = race
+        self.class_ = class_
+        self.alignment = alignment
+        self.gender = gender
+        self.intelligence = intelligence
+        self.wisdom = wisdom
 
         self.angle = angle
 
@@ -36,12 +50,9 @@ class Character(Enitity):
 
 
 class Player(Character):
-    def __init__(self, race, class_, alignment, gender, intelligence, wisdom, **kwargs):
-        super(Player, self).__init__(**kwargs)
-        self.race = race
-        self.class_ = class_
-        self.alignment = alignment
-        self.gender = gender
 
-        self.intelligence = intelligence
-        self.wisdom = wisdom
+    batch = pyglet.graphics.Batch()
+
+    def __init__(self, *args, **kwargs):
+        super(Player, self).__init__(*args, **kwargs)
+        pass

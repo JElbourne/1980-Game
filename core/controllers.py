@@ -12,6 +12,7 @@ import pyglet
 
 from core.views import MainMenuView
 from core.views import GameMapView
+from core.entity import Player
 
 
 class Controller(object):
@@ -90,6 +91,15 @@ class GameController(Controller):
         print ("game setting up...")
         # The first view in the game will be the GameMapView
         self.switch_view_class(GameMapView)
+        print ("setting up player...")
+        self.player = Player()
+        self.player.sprite = pyglet.text.Label("@",
+                                               font_name="Courier New",
+                                               font_size=20,
+                                               bold=True, x=300, y=300,
+                                               batch=self.player.batch)
+        #
+        print ("player is created!")
         return True
 
     def push_handlers(self):

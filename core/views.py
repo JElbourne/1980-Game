@@ -205,3 +205,4 @@ class GameMapView(View):
     def on_draw(self):
         # GameMapView Requires many layers and so se override on_draw().
         self._clear()
+        self.controller.player.batch.draw()
