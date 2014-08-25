@@ -78,6 +78,7 @@ class MainMenuController(Controller):
 
 
 class GameController(Controller):
+    batch = pyglet.graphics.Batch()
     def __init__(self, *args, **kwargs):
         super(GameController, self).__init__(*args, **kwargs)
 
@@ -91,16 +92,31 @@ class GameController(Controller):
         print ("game setting up...")
         # The first view in the game will be the GameMapView
         self.switch_view_class(GameMapView)
+
         print ("setting up player...")
         self.player = Player()
         self.player.sprite = pyglet.text.Label("@",
                                                font_name="Courier New",
                                                font_size=20,
                                                bold=True, x=300, y=300,
-                                               batch=self.player.batch)
+                                               batch=self.batch,
+                                               group=self.player.group)
         #
         print ("player is created!")
         return True
+
+
+    def _new_player_pos(self, angle):
+        x,y = self.player.sprite.x, self.player.sprite.y
+        if angle == 0: x += 16
+        elif angle == 90: y += 16
+        elif angle == 180: x -= 16
+        elif angle == 270: y -= 16
+        return (x,y)
+
+    def move_player(self, angle):
+        pos = self._new_player_pos(angle)
+        self.player.move(pos)
 
     def push_handlers(self):
         if self.setup():

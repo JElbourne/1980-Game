@@ -7,6 +7,7 @@ Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
 import pyglet
+from pyglet.window import key
 
 from core.controllers import MainMenuController
 
@@ -39,3 +40,9 @@ class Game(pyglet.window.Window):
         # if this is called we will call the controller's update method.
         if self.controller:
             self.controller.update(dt)
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            print ("Closed Window manually, Good Bye!")
+            pyglet.app.exit()
+

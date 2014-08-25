@@ -197,12 +197,12 @@ class GameMapView(View):
         # The View Accepts Key Press and calls the controller.
         # This is located in a view becuase different views have different
         # inputs. (ie. Touch screen, keyboard)
-        if symbol == key.W: pass
-        if symbol == key.A: pass
-        if symbol == key.S: pass
-        if symbol == key.D: pass
+        if symbol == key.W: self.controller.move_player(90)
+        if symbol == key.A: self.controller.move_player(180)
+        if symbol == key.S: self.controller.move_player(270)
+        if symbol == key.D: self.controller.move_player(0)
 
     def on_draw(self):
         # GameMapView Requires many layers and so se override on_draw().
         self._clear()
-        self.controller.player.batch.draw()
+        self.controller.batch.draw()

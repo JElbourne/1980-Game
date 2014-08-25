@@ -7,6 +7,7 @@ import pyglet
 
 
 class Enitity(object):
+    group = pyglet.graphics.OrderedGroup(3)
     def __init__(self, name, hp, lightLevel, level):
         self.name = name
         self.hp = hp
@@ -17,10 +18,14 @@ class Enitity(object):
 
         self.sprite = None
 
+    def move(self, pos):
+        if self.sprite:
+            self.sprite.x, self.sprite.y = pos
+
 
 class Character(Enitity):
 
-    batch = pyglet.graphics.Batch()
+    group = pyglet.graphics.OrderedGroup(4)
 
     def __init__(self, armour=20, speed=30, strength=10, hunger=10, gold=0,
                  angle=0, race="human", class_="Rogue", alignment="Neutral",
@@ -51,7 +56,7 @@ class Character(Enitity):
 
 class Player(Character):
 
-    batch = pyglet.graphics.Batch()
+    group = pyglet.graphics.OrderedGroup(5)
 
     def __init__(self, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
