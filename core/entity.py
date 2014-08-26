@@ -8,9 +8,13 @@ Copyright (c) 2014 Jason Elbourne. All rights reserved.
 
 import pyglet
 
+from core import gfx
+
 
 class Enitity(object):
+    spriteSet = gfx.get_sprite_set()
     group = pyglet.graphics.OrderedGroup(3)
+
     def __init__(self, name, hp, lightLevel, level):
         self.name = name
         self.hp = hp
@@ -61,6 +65,36 @@ class Player(Character):
 
     group = pyglet.graphics.OrderedGroup(5)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, x, y, batch, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
-        pass
+
+        self._playerSpriteR = self.spriteSet[0][0]
+        self._playerSpriteU = self.spriteSet[0][1]
+        self._playerSpriteL = self.spriteSet[0][2]
+        self._playerSpriteD = self.spriteSet[0][3]
+
+        self.sprite = pyglet.sprite.Sprite(
+                                           self._playerSpriteU,
+                                           x=x,
+                                           y=y,
+                                           batch=batch,
+                                           group=self.group
+                                           )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
