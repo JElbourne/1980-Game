@@ -15,6 +15,7 @@ from pyglet.window import key
 from core.static_text import MAIN_MENU_TEXT
 from core.config import CONFIG
 
+
 class View(object):
     def __init__(self, controller):
         super(View, self).__init__()

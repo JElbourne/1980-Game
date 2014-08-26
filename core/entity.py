@@ -1,6 +1,9 @@
 
 """
 entity.py
+
+Created by Jason Elbourne on 2014-08-23.
+Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
 import pyglet

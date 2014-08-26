@@ -15,6 +15,11 @@ from core.config import CONFIG
 
 
 def main():
+
+    # Chunk of 12 * sprite of 16 * 3 chunks High = 576 pixels High
+    # Chunk of 12 * sprite of 16 * 4 chunks Wide = 768 pixels Wide
+    # Plus HUD spacing making a total size of 1260x690 pixels
+
     # Create the Game Instance
     game = Game(width=CONFIG["windowWidth"],
                 height=CONFIG["windowHeight"],

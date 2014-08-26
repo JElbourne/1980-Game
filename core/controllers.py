@@ -13,7 +13,7 @@ import pyglet
 from core.views import MainMenuView
 from core.views import GameMapView
 from core.entity import Player
-
+from core import gfx
 
 class Controller(object):
     def __init__(self, window):
@@ -79,6 +79,7 @@ class MainMenuController(Controller):
 
 class GameController(Controller):
     batch = pyglet.graphics.Batch()
+
     def __init__(self, *args, **kwargs):
         super(GameController, self).__init__(*args, **kwargs)
 
@@ -93,6 +94,8 @@ class GameController(Controller):
         # The first view in the game will be the GameMapView
         self.switch_view_class(GameMapView)
 
+        spriteSet = gfx.get_sprite_set()
+        print (spriteSet)
         print ("setting up player...")
         self.player = Player()
         self.player.sprite = pyglet.text.Label("@",
