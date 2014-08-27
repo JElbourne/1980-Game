@@ -15,6 +15,7 @@ CONFIG = {
     "fontName": "Courier New",
     "fontSizeSm": 12,
     "fontSizeMd": 16,
-    "fontSizeLg": 20
+    "fontSizeLg": 20,
+    "chunkSize": 12
 
 }

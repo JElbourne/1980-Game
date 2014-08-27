@@ -13,6 +13,7 @@ import pyglet
 from core.views import MainMenuView
 from core.views import GameMapView
 from core.entity import Player
+from core.world import World
 
 
 class Controller(object):
@@ -93,6 +94,8 @@ class GameController(Controller):
         print ("game setting up...")
         # The first view in the game will be the GameMapView
         self.switch_view_class(GameMapView)
+        print ("setting up world...")
+        self.world = World(self.window.width, self.window.height)
 
         print ("setting up player...")
         self.player = Player(x=100, y=100, batch=self.batch)
