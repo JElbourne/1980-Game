@@ -44,7 +44,7 @@ class World(object):
 
         self._generate_map_level(0)
 
-    def _generate_room(self):
+    def _generate_room(self, z):
         ## A Chunk (12x12)
         #===========
         # |-|-|-|-|-|-|-|-|-|-|-|-|
@@ -77,8 +77,9 @@ class World(object):
         midRoomX = rW + random.randint(1,((self.cs-(rW*2+1))//2))
         midRoomY = rH + random.randint(1,((self.cs-(rH*2+1))//2))
 
+        midRoomCoord = ( int(midRoomX*self.ss), int(midRoomY*self.ss), z)
 
-
+        wallCoords = utils.build_ring_coords(x, y, z, rw, rh)
 
 
     def _generate_map_level(self, level):
