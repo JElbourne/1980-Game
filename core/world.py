@@ -26,10 +26,57 @@ class World(object):
         self.windowWidth = window_width
         self.windowHeight = window_height
 
-        cs = CONFIG["chunkSize"]
-        ss = CONFIG["spriteSize"]
+        self.cs = CONFIG["chunkSize"]
+        self.ss = CONFIG["spriteSize"]
 
-        self.chunksWide = (self.windowWidth//(cs*ss))-1
-        self.chunksHigh = self.windowHeight//(cs*ss)
+        self.chunksWide = (self.windowWidth//(self.cs*self.ss))-1
+        self.chunksHigh = self.windowHeight//(self.cs*self.ss)
 
         print (self.chunksWide, self.chunksHigh)
+
+        self._grass = ("Grass", self.spriteSet[1][0])
+        self._dirt = ("Dirt", self.spriteSet[2][0])
+
+        self.mapTileData = {}
+
+        self._generate_map_level(0)
+
+    def _gernerate_map_level(self, level):
+        print ("starting to generate map chunks...")
+        for x in range(self.chunksWide):
+            for y in range(self.chunksHigh):
+                self._initiate_chunk(x, y, level)
+                print ("-> ({0}, {1}, {2}) Done!".format(x, y, level))
+
+    def _initialize_chunk(self, x, y, z):
+        for c in range(self.cs):
+            for r in range(self.cs):
+                globalX = (c*self.ss) + (self.cs*self.ss*x)
+                globalY = (r*self.ss) + (self.cs*self.ss*y)
+                coords = (globalX, globalY, z)
+
+                self.mapTileData[coords] = {
+                    "sprite": self._dirt[1],
+                    "name": self._dirt[0],
+                    "collisionTile": False,
+                    "roomFloorTile": False
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
