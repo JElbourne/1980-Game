@@ -87,6 +87,8 @@ class GameController(Controller):
         self.world = None
         self.player = None
 
+        self._visibleMapSprites = []
+
     def update(self, dt):
         pass
 
@@ -98,9 +100,12 @@ class GameController(Controller):
         self.world = World(self.window.width, self.window.height)
 
         print ("setting up player...")
-        self.player = Player(x=100, y=100, batch=self.batch)
+        self.player = Player(x=256, y=256, batch=self.batch)
         #
         print ("player is created!")
+
+        self._generate_fov()
+
         return True
 
     def _new_player_angle(self, modifier):
@@ -119,6 +124,20 @@ class GameController(Controller):
         elif angle == 270:
             y -= 16
         return (x,y)
+
+    def _generate_fov(self):
+        self._visibleMapSprites = []
+        # Python 2.7   iteritems()
+        for key, tileData in self.world.mapTileData.items():
+            self._visibleMapSprites.append(
+                                           pyglet.sprite.Sprite(
+                                                img=tileData["sprite"],
+                                                x=key[0],
+                                                y=key[1],
+                                                batch=self.batch,
+                                                group=self.world.group
+                                                )
+                                           )
 
     def move_player(self, angle):
         pos = self._new_player_pos(angle)

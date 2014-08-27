@@ -6,7 +6,7 @@ world.py
 import pyglet
 
 from core.config import CONFIG
-
+from core import gfx
 
 class World(object):
 
@@ -20,6 +20,7 @@ class World(object):
 
     """
 
+    spriteSet = gfx.get_sprite_set()
     group = pyglet.graphics.OrderedGroup(0)
 
     def __init__(self, window_width, window_height):
@@ -41,11 +42,11 @@ class World(object):
 
         self._generate_map_level(0)
 
-    def _gernerate_map_level(self, level):
+    def _generate_map_level(self, level):
         print ("starting to generate map chunks...")
         for x in range(self.chunksWide):
             for y in range(self.chunksHigh):
-                self._initiate_chunk(x, y, level)
+                self._initialize_chunk(x, y, level)
                 print ("-> ({0}, {1}, {2}) Done!".format(x, y, level))
 
     def _initialize_chunk(self, x, y, z):
