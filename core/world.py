@@ -3,6 +3,8 @@
 world.py
 """
 
+import random
+
 import pyglet
 
 from core.config import CONFIG
@@ -41,6 +43,43 @@ class World(object):
         self.mapTileData = {}
 
         self._generate_map_level(0)
+
+    def _generate_room(self):
+        ## A Chunk (12x12)
+        #===========
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+        # |-|-|-|-|-|-|-|-|-|-|-|-|
+
+        ## Radius Explained (ring)
+        #
+        #       R=1             R=2             R=3
+        #       x x x           x x x x x       x x x x x x x
+        #       x o x           x x x x x       x x x x x x x
+        #       x x x           x x o x x       x x x x x x x
+        #                       x x x x x       x x x o x x x
+        #                       x x x x x       x x x x x x x
+        #                                       x x x x x x x
+        #                                       x x x x x x x
+
+        rW = random.randint(2,4+1)
+        rH = random.randint(2,4+1)
+
+        midRoomX = rW + random.randint(1,((self.cs-(rW*2+1))//2))
+        midRoomY = rH + random.randint(1,((self.cs-(rH*2+1))//2))
+
+
+
+
 
     def _generate_map_level(self, level):
         print ("starting to generate map chunks...")
