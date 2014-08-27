@@ -100,18 +100,30 @@ class GameController(Controller):
         print ("player is created!")
         return True
 
+    def _new_player_angle(self, modifier):
+        curAngle = self.player.angle
+        newAngle = (curAngle + modifier)%360
+        return newAngle
 
     def _new_player_pos(self, angle):
         x,y = self.player.sprite.x, self.player.sprite.y
-        if angle == 0: x += 16
-        elif angle == 90: y += 16
-        elif angle == 180: x -= 16
-        elif angle == 270: y -= 16
+        if angle == 0:
+            x += 16
+        elif angle == 90:
+            y += 16
+        elif angle == 180:
+            x -= 16
+        elif angle == 270:
+            y -= 16
         return (x,y)
 
     def move_player(self, angle):
         pos = self._new_player_pos(angle)
         self.player.move(pos)
+
+    def change_player_angle(self, modifier):
+        newAngle = self._new_player_angle(modifier)
+        self.player.change_angle(newAngle)
 
     def push_handlers(self):
         if self.setup():
