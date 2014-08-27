@@ -79,7 +79,26 @@ class World(object):
 
         midRoomCoord = ( int(midRoomX*self.ss), int(midRoomY*self.ss), z)
 
-        wallCoords = utils.build_ring_coords(x, y, z, rw, rh)
+        wallCoords = utils.build_ring_coords(midRoomCoord[0], 
+                                             midRoomCoord[1], 
+                                             z, 
+                                             rW,
+                                             rH
+                                             )
+
+        roomCoords = [midRoomCoord]
+        maxR = rW if rW>rH else rH
+        for i in range(1, maxR+1):
+            irW = i if i <= rW else rW
+            irH = i if i <= rH else rH
+
+            roomCoords += utils.build_ring_coords(midRoomCoord[0], 
+                                             midRoomCoord[1], 
+                                             z, 
+                                             irW,
+                                             irH
+                                             )
+        return roomCoords, wllCoords
 
 
     def _generate_map_level(self, level):
