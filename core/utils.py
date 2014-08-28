@@ -36,7 +36,7 @@ def build_ring_coords(x, y, z, rw, rh):
         x += ss
         ringCoords.append((int(x),int(y),int(z)))
     if rh > 1:
-        for i in range(1,rw): # return Home
+        for i in range(1, rh): # return Home
             y += ss
             ringCoords.append((int(x),int(y),int(z)))
 
