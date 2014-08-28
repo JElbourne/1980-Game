@@ -114,7 +114,7 @@ class GameController(Controller):
         return newAngle
 
     def _new_player_pos(self, angle):
-        x,y = self.player.sprite.x, self.player.sprite.y
+        x, y, z = self.player.sprite.x, self.player.sprite.y, self.player.level
         if angle == 0:
             x += 16
         elif angle == 90:
@@ -123,7 +123,11 @@ class GameController(Controller):
             x -= 16
         elif angle == 270:
             y -= 16
-        return (x,y)
+        return (x, y, z)
+
+    def _return_collision(self, coords):
+        print (self.world.mapTileData[coords])
+        return self.world.mapTileData[coords]['collisionTile']
 
     def _generate_fov(self):
         self._visibleMapSprites = []
@@ -140,8 +144,10 @@ class GameController(Controller):
                                            )
 
     def move_player(self, angle):
-        pos = self._new_player_pos(angle)
-        self.player.move(pos)
+        coords = self._new_player_pos(angle)
+        print (coords)
+        if not self._return_collision(coords):
+            self.player.move(coords)
 
     def change_player_angle(self, modifier):
         newAngle = self._new_player_angle(modifier)

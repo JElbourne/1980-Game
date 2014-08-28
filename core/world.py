@@ -130,6 +130,9 @@ class World(object):
 
         for c in range(self.cs):
             for r in range(self.cs):
+                roomFloorTile = False
+                collisionTile = False
+
                 globalX = (c*self.ss) + (self.cs*self.ss*chunkX)
                 globalY = (r*self.ss) + (self.cs*self.ss*chunkY)
                 coord = (globalX, globalY, z)

@@ -26,10 +26,12 @@ class Enitity(object):
 
         self.sprite = None
 
-    def move(self, pos):
+    def move(self, coords):
         # A change position method to update the instance sprite position
         if self.sprite:
-            self.sprite.x, self.sprite.y = pos
+            self.sprite.x = coords[0]
+            self.sprite.y = coords[1]
+            self.level = coords[2]
 
     def change_angle(self, angle):
         # A change angle method to update the instance variable
