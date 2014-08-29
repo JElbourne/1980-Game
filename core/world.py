@@ -112,7 +112,37 @@ class World(object):
                                                   irW,
                                                   irH
                                                   )
-        return set(roomCoords), set(wallCoords)
+        return set(roomCoords), wallCoords
+
+    def _insert_doors(self, wallCoords):
+        doorCoords = []
+        wc = wallCoords
+        numDoors = 1 if len(wc) < 18 else 2 if 18 < len(wc) < 26 else 3
+        for i in range(1, numDoors+1):
+            doorCoord = None
+            j = 0
+            while True:
+                j += 1
+                doorIndex = random.randint(0, len(wallCoords)-1)
+                doorCoord = wallCoords[doorIndex]
+                if int(doorIndex) > 0 and int(doorIndex+1) < len(wallCoords):
+                    before = wallCoords[doorIndex-1]
+                    after = wallCoords[doorIndex+1]
+                    print (before, doorCoord, after)
+                    if doorCoord[0] == before[0] and doorCoord[1] == after[1]:
+                        doorCoord = None
+                    elif doorCoord[0] == after[0] and doorCoord[1] ==before[1]:
+                        doorCoord = None
+                    else:
+                        break
+
+                if j == len(wallCoords):
+                    break
+            if doorCoord:
+                doorCoords.append(doorCoord)
+                wallCoords.remove(doorCoord)
+
+        return wallCoords, doorCoords
 
     def _generate_map_level(self, level):
         print ("starting to generate map chunks...")
@@ -127,6 +157,8 @@ class World(object):
         setSprite = self._dirt
 
         roomCoords, wallCoords = self._generate_room(chunkX, chunkY, z)
+
+        wallCoords, doorCoords = self._insert_doors(wallCoords)
 
         for c in range(self.cs):
             for r in range(self.cs):
