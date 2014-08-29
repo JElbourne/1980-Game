@@ -43,6 +43,9 @@ class World(object):
         self._dirt = ("Dirt", self.spriteSet[2][0])
         self._stoneWall = ("Stone Wall", self.spriteSet[3][0])
         self._stoneFloor = ("Stone Floor", self.spriteSet[4][0])
+        self._doorClosed = ("Closed Door", self.spriteSet[5][0])
+        self._doorLocked = ("Locked Door", self.spriteSet[5][1])
+        self._doorOpen = ("Open Door", self.spriteSet[5][2])
 
         self.mapTileData = {}
 
@@ -112,7 +115,7 @@ class World(object):
                                                   irW,
                                                   irH
                                                   )
-        return set(roomCoords), wallCoords
+        return roomCoords, wallCoords
 
     def _insert_doors(self, wallCoords):
         doorCoords = []
@@ -158,7 +161,9 @@ class World(object):
 
         roomCoords, wallCoords = self._generate_room(chunkX, chunkY, z)
 
-        wallCoords, doorCoords = self._insert_doors(wallCoords)
+        floorCoords = set(roomCoords) - set(wallCoords)
+
+        wallCoords, doorCoords = self._insert_doors(list(wallCoords))
 
         for c in range(self.cs):
             for r in range(self.cs):
@@ -172,9 +177,14 @@ class World(object):
                 if coord in wallCoords:
                     setSprite = self._stoneWall
                     collisionTile = True
-                elif coord in roomCoords:
+                elif coord in doorCoords:
+                    setSprite = self._doorClosed
+                    collisionTile = True
+                elif coord in floorCoords:
                     setSprite = self._stoneFloor
                     roomFloorTile = True
+                elif random.randint(1,100) < 10:
+                    setSprite = self._grass
                 else:
                     setSprite = self._dirt
 
