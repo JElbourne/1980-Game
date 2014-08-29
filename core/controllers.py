@@ -14,7 +14,7 @@ from core.views import MainMenuView
 from core.views import GameMapView
 from core.entity import Player
 from core.world import World
-
+from core.config import CONFIG
 
 class Controller(object):
     def __init__(self, window):
@@ -152,6 +152,36 @@ class GameController(Controller):
     def change_player_angle(self, modifier):
         newAngle = self._new_player_angle(modifier)
         self.player.change_angle(newAngle)
+
+    def open_door(self):
+        ss = CONFIG['spriteSize']
+        (x,y,z) = self.player.sprite.x, self.player.sprite.y, self.player.level
+        coordOptions = [(x+ss, y, z), (x-ss, y, z), (x, y+ss, z), (x, y-ss, z)]
+        for coord in coordOptions:
+            if coord in self.world.mapTileData:
+                tileData = self.world.mapTileData[coord]
+                if tileData['name'] == self.world.doorClosed[0]:
+                    tileData['sprite'] = self.world.doorOpen[1]
+                    tileData['name'] = self.world.doorOpen[0]
+                    tileData['collisionTile'] = False
+                    self._generate_fov()
+
+    def close_door(self):
+        ss = CONFIG['spriteSize']
+        (x,y,z) = self.player.sprite.x, self.player.sprite.y, self.player.level
+        coordOptions = [(x+ss, y, z), (x-ss, y, z), (x, y+ss, z), (x, y-ss, z)]
+        for coord in coordOptions:
+            if coord in self.world.mapTileData:
+                tileData = self.world.mapTileData[coord]
+                if tileData['name'] == self.world.doorOpen[0]:
+                    tileData['sprite'] = self.world.doorClosed[1]
+                    tileData['name'] = self.world.doorClosed[0]
+                    tileData['collisionTile'] = True
+                    self._generate_fov()
+
+
+
+
 
     def push_handlers(self):
         if self.setup():

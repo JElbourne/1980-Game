@@ -43,9 +43,9 @@ class World(object):
         self._dirt = ("Dirt", self.spriteSet[2][0])
         self._stoneWall = ("Stone Wall", self.spriteSet[3][0])
         self._stoneFloor = ("Stone Floor", self.spriteSet[4][0])
-        self._doorClosed = ("Closed Door", self.spriteSet[5][0])
-        self._doorLocked = ("Locked Door", self.spriteSet[5][1])
-        self._doorOpen = ("Open Door", self.spriteSet[5][2])
+        self.doorClosed = ("Closed Door", self.spriteSet[5][0])
+        self.doorLocked = ("Locked Door", self.spriteSet[5][1])
+        self.doorOpen = ("Open Door", self.spriteSet[5][2])
 
         self.mapTileData = {}
 
@@ -178,7 +178,7 @@ class World(object):
                     setSprite = self._stoneWall
                     collisionTile = True
                 elif coord in doorCoords:
-                    setSprite = self._doorClosed
+                    setSprite = self.doorClosed
                     collisionTile = True
                 elif coord in floorCoords:
                     setSprite = self._stoneFloor

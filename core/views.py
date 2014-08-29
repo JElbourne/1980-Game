@@ -212,7 +212,11 @@ class GameMapView(View):
             self.controller.change_player_angle(90)
         if symbol == key.RIGHT:
             self.controller.change_player_angle(-90)
-
+        ## Door Inputs
+        if symbol == key.RSHIFT:
+            self.controller.open_door()
+        if symbol == key.RCTRL:
+            self.controller.close_door()
 
     def on_draw(self):
         # GameMapView Requires many layers and so se override on_draw().
