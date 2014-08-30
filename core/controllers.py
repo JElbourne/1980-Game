@@ -7,6 +7,7 @@ Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
 from functools import partial
+import random
 
 import pyglet
 
@@ -15,6 +16,7 @@ from core.views import GameMapView
 from core.entity import Player
 from core.world import World
 from core.config import CONFIG
+
 
 class Controller(object):
     def __init__(self, window):
@@ -99,8 +101,10 @@ class GameController(Controller):
         print ("setting up world...")
         self.world = World(self.window.width, self.window.height)
 
+        spawnCoord = self._pick_random_spawn_coords(level=0)
+
         print ("setting up player...")
-        self.player = Player(x=256, y=256, batch=self.batch)
+        self.player = Player(x=spawnCoord[0], y=spawnCoord[1],batch=self.batch)
         #
         print ("player is created!")
 
@@ -108,9 +112,17 @@ class GameController(Controller):
 
         return True
 
+    def _pick_random_spawn_coords(self, level=0):
+        if level in self.world.floorCoords:
+            index = random.randint(0, len(self.world.floorCoords[level])-1)
+            spawnCoord = self.world.floorCoords[level][index]
+        else:
+            spawnCoord = (256, 256, level)
+        return spawnCoord
+
     def _new_player_angle(self, modifier):
         curAngle = self.player.angle
-        newAngle = (curAngle + modifier)%360
+        newAngle = (curAngle + modifier) % 360
         return newAngle
 
     def _new_player_pos(self, angle):

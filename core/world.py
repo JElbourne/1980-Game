@@ -48,6 +48,7 @@ class World(object):
         self.doorOpen = ("Open Door", self.spriteSet[5][2])
 
         self.mapTileData = {}
+        self.floorCoords = {0:[],}
 
         self._generate_map_level(0)
 
@@ -161,7 +162,9 @@ class World(object):
 
         roomCoords, wallCoords = self._generate_room(chunkX, chunkY, z)
 
-        floorCoords = set(roomCoords) - set(wallCoords)
+        if z not in self.floorCoords:
+            self.floorCoords[z] = []
+        self.floorCoords[z] += list(set(roomCoords) - set(wallCoords))
 
         wallCoords, doorCoords = self._insert_doors(list(wallCoords))
 
@@ -180,7 +183,7 @@ class World(object):
                 elif coord in doorCoords:
                     setSprite = self.doorClosed
                     collisionTile = True
-                elif coord in floorCoords:
+                elif coord in self.floorCoords[z]:
                     setSprite = self._stoneFloor
                     roomFloorTile = True
                 elif random.randint(1,100) < 10:
