@@ -38,6 +38,11 @@ class Enitity(object):
         self.angle = angle
         self._update_sprite_angle()
 
+    def get_coords(self):
+        if self.sprite:
+            return self.sprite.x, self.sprite.y, self.level
+        return None
+
 
 class Character(Enitity):
 

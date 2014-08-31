@@ -16,7 +16,7 @@ from core.views import GameMapView
 from core.entity import Player
 from core.world import World
 from core.config import CONFIG
-
+from core import utils
 
 class Controller(object):
     def __init__(self, window):
@@ -143,17 +143,46 @@ class GameController(Controller):
 
     def _generate_fov(self):
         self._visibleMapSprites = []
-        # Python 2.7   iteritems()
-        for key, tileData in self.world.mapTileData.items():
-            self._visibleMapSprites.append(
-                                           pyglet.sprite.Sprite(
-                                                img=tileData["sprite"],
-                                                x=key[0],
-                                                y=key[1],
-                                                batch=self.batch,
-                                                group=self.world.group
-                                                )
-                                           )
+
+        visibleCoords = []
+
+        entityPosition = self.player.get_coords()
+
+        visibleCoords.append(entityPosition)
+        if entityPosition:
+            for r in range(1, self.player.lightLevel+1):
+                visibleCoords += utils.build_ring_coords(entityPosition[0],
+                                             entityPosition[1],
+                                             entityPosition[2],
+                                             r,
+                                             r
+                                             )
+            for coord in visibleCoords:
+                if coord in self.world.mapTileData:
+                    if coord in self.world.roomCoords[entityPosition[2]]:
+                        tileData = self.world.mapTileData[coord]
+                        self._visibleMapSprites.append(
+                                               pyglet.sprite.Sprite(
+                                                    img=tileData["sprite"],
+                                                    x=coord[0],
+                                                    y=coord[1],
+                                                    batch=self.batch,
+                                                    group=self.world.group
+                                                    )
+                                               )
+
+
+        # # Python 2.7   iteritems()
+        # for key, tileData in self.world.mapTileData.items():
+        #     self._visibleMapSprites.append(
+        #                                    pyglet.sprite.Sprite(
+        #                                         img=tileData["sprite"],
+        #                                         x=key[0],
+        #                                         y=key[1],
+        #                                         batch=self.batch,
+        #                                         group=self.world.group
+        #                                         )
+        #                                    )
 
     def move_player(self, angle):
         coords = self._new_player_pos(angle)

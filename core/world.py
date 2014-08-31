@@ -47,8 +47,9 @@ class World(object):
         self.doorLocked = ("Locked Door", self.spriteSet[5][1])
         self.doorOpen = ("Open Door", self.spriteSet[5][2])
 
-        self.mapTileData = {}
+        self.mapTileData = {
         self.floorCoords = {0:[],}
+        self.roomCoords = {0:[],}
 
         self._generate_map_level(0)
 
@@ -165,7 +166,7 @@ class World(object):
         if z not in self.floorCoords:
             self.floorCoords[z] = []
         self.floorCoords[z] += list(set(roomCoords) - set(wallCoords))
-
+        self.roomCoords[z] += list(set(roomCoords))
         wallCoords, doorCoords = self._insert_doors(list(wallCoords))
 
         for c in range(self.cs):
