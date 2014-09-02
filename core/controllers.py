@@ -90,6 +90,7 @@ class GameController(Controller):
         self.player = None
 
         self._visibleMapSprites = []
+        self._litCoords = []
 
     def update(self, dt):
         pass
@@ -150,9 +151,21 @@ class GameController(Controller):
             y -= 16
         return (x, y, z)
 
-    def _return_collision(self, coords):
-        print (self.world.mapTileData[coords])
-        return self.world.mapTileData[coords]['collisionTile']
+    def _return_collision(self, coord):
+        mapWide = self.world.chunksWide * self.world.cs * self.world.ss
+        mapHigh = self.world.chunksHigh * self.world.cs * self.world.ss
+        return (0 < coord[0] < mapWide
+                or 0 < coord[1] < mapHigh
+                or self.world.mapTileData[coord]['collisionTile'])
+
+    def _return_is_lit(self, coord):
+        return coord in self._litCoords
+
+    def _set_lit(self,coord):
+        mapWide = self.world.chunksWide * self.world.cs * self.world.ss
+        mapHigh = self.world.chunksHigh * self.world.cs * self.world.ss
+        if (0 < coord[0] < mapWide or 0 < coord[1] < mapHigh):
+            self._litCoords.append(coord)
 
     def _generate_fov(self):
         self._visibleMapSprites = []
