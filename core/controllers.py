@@ -178,6 +178,29 @@ class GameController(Controller):
             while dx <=0:
                 dx += 1
                 x, y = (cx + dx * xx + dy * xy, cy + dx * yx + dy * yy)
+                lSlope, rSlope = (dx-0.5)/(dy+0.5), (dx+0.5)/(dy-0.5)
+                if start <  rSlope:
+                    continue
+                elif end > lSlope:
+                    break
+                else:
+                    if dx*dx + dy*dy < radiusSquared:
+                        self._set_lit((x, y))
+                    if blocked:
+                        if self._return_collision((x, y)):
+                            newStart = rSlope
+                            continue
+                        else:
+                            blocked = False
+                            start = newStart
+                    else:
+                        if self._return_collision((x, y)) and j < radius:
+                            blocked = True
+                            self._cast_light( cs,cy,j+1,start,lSlope,radius
+                                             xx,xy,yx,yy, id+1)
+                            newStart = rSlope
+            if blocked:
+                break
 
     def _generate_fov(self):
 
