@@ -47,9 +47,7 @@ class World(object):
         self.doorLocked = ("Locked Door", self.spriteSet[5][1])
         self.doorOpen = ("Open Door", self.spriteSet[5][2])
 
-        self.mapTileData = {
-        self.floorCoords = {0:[],}
-        self.roomCoords = {0:[],}
+        self.mapTileData = {}
 
         self._generate_map_level(0)
 
@@ -163,16 +161,15 @@ class World(object):
 
         roomCoords, wallCoords = self._generate_room(chunkX, chunkY, z)
 
-        if z not in self.floorCoords:
-            self.floorCoords[z] = []
-        self.floorCoords[z] += list(set(roomCoords) - set(wallCoords))
-        self.roomCoords[z] += list(set(roomCoords))
+        floorCoords = list(set(roomCoords) - set(wallCoords))
+        roomCoords = list(set(roomCoords))
         wallCoords, doorCoords = self._insert_doors(list(wallCoords))
 
         for c in range(self.cs):
             for r in range(self.cs):
                 roomFloorTile = False
                 collisionTile = False
+                roomTile = False
 
                 globalX = (c*self.ss) + (self.cs*self.ss*chunkX)
                 globalY = (r*self.ss) + (self.cs*self.ss*chunkY)
@@ -181,12 +178,15 @@ class World(object):
                 if coord in wallCoords:
                     setSprite = self._stoneWall
                     collisionTile = True
+                    roomTile = True
                 elif coord in doorCoords:
                     setSprite = self.doorClosed
                     collisionTile = True
-                elif coord in self.floorCoords[z]:
+                    roomTile = True
+                elif coord in floorCoords:
                     setSprite = self._stoneFloor
                     roomFloorTile = True
+                    roomTile = True
                 elif random.randint(1,100) < 10:
                     setSprite = self._grass
                 else:
@@ -196,7 +196,8 @@ class World(object):
                     "sprite": setSprite[1],
                     "name": setSprite[0],
                     "collisionTile": collisionTile,
-                    "roomFloorTile": roomFloorTile
+                    "roomFloorTile": roomFloorTile,
+                    "roomTile": roomTile
                     }
 
 

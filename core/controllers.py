@@ -113,11 +113,24 @@ class GameController(Controller):
         return True
 
     def _pick_random_spawn_coords(self, level=0):
-        if level in self.world.floorCoords:
-            index = random.randint(0, len(self.world.floorCoords[level])-1)
-            spawnCoord = self.world.floorCoords[level][index]
-        else:
-            spawnCoord = (256, 256, level)
+        cSW = self.world.chunksWide * self.world.cs
+        cSH = self.world.chunksHigh * self.world.cs
+        maxLoop = cSW * cSH
+        j = 0
+        while True:
+            j += 1
+
+            coordX = random.randint(3,cSW-2)
+            coordY = random.randint(3,cSH-2)
+            spawnCoord = (coordX*self.world.ss, coordY*self.world.ss, level)
+            if spawnCoord in self.world.mapTileData:
+                tileData = self.world.mapTileData[spawnCoord]
+                if tileData["roomFloorTile"]:
+                    break
+
+            if j >= maxLoop:
+                spawnCoord = (256,256,level)
+                break
         return spawnCoord
 
     def _new_player_angle(self, modifier):
@@ -159,8 +172,8 @@ class GameController(Controller):
                                              )
             for coord in visibleCoords:
                 if coord in self.world.mapTileData:
-                    if coord in self.world.roomCoords[entityPosition[2]]:
-                        tileData = self.world.mapTileData[coord]
+                    tileData = self.world.mapTileData[coord]
+                    if tileData["roomTile"]:
                         self._visibleMapSprites.append(
                                                pyglet.sprite.Sprite(
                                                     img=tileData["sprite"],
