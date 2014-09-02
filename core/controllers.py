@@ -154,8 +154,8 @@ class GameController(Controller):
     def _return_collision(self, coord):
         mapWide = self.world.chunksWide * self.world.cs * self.world.ss
         mapHigh = self.world.chunksHigh * self.world.cs * self.world.ss
-        return (0 < coord[0] < mapWide
-                or 0 < coord[1] < mapHigh
+        return (0 > coord[0] > mapWide
+                or 0 > coord[1] > mapHigh
                 or self.world.mapTileData[coord]['collisionTile'])
 
     def _return_is_lit(self, coord):
@@ -167,12 +167,37 @@ class GameController(Controller):
         if (0 < coord[0] < mapWide or 0 < coord[1] < mapHigh):
             self._litCoords.append(coord)
 
+    def _cast_light(self, coord, row, start, end, radius, xx, xy, yx, yy, id):
+        pass
+
     def _generate_fov(self):
+
+        multi = [
+                [1, 0, 0,-1,-1, 0, 0, 1],
+                [0, 1,-1, 0, 0,-1, 1, 0],
+                [0, 1, 1, 0, 0,-1,-1, 0],
+                [1, 0, 0, 1,-1, 0, 0,-1],
+                ]
+
         self._visibleMapSprites = []
 
         visibleCoords = []
 
         entityPosition = self.player.get_coords()
+
+        for octant in range(8):
+        self._cast_light(
+                         entityPosition,
+                         1,
+                         1.0,
+                         0.0,
+                         self.player.lightLevel,
+                         multi[0][octant],
+                         multi[1][octant],
+                         multi[2][octant],
+                         multi[3][octant],
+                         0
+                         )
 
         visibleCoords.append(entityPosition)
         if entityPosition:
