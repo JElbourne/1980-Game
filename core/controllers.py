@@ -168,7 +168,14 @@ class GameController(Controller):
             self._litCoords.append(coord)
 
     def _cast_light(self, coord, row, start, end, radius, xx, xy, yx, yy, id):
-        pass
+        if start < end:
+            return
+        radiusSquared = radius * radius
+        for j in range(row, radius+1):
+            dx, dy = -j-1, -j
+            blocked = False
+            while dx <=0:
+                pass
 
     def _generate_fov(self):
 
