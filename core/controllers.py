@@ -91,6 +91,7 @@ class GameController(Controller):
 
         self._visibleMapSprites = []
         self._litCoords = []
+        self._memoryCoords = []
 
     def update(self, dt):
         pass
@@ -152,32 +153,30 @@ class GameController(Controller):
         return (x, y, z)
 
     def _return_collision(self, coord):
-        mapWide = self.world.chunksWide * self.world.cs * self.world.ss
-        mapHigh = self.world.chunksHigh * self.world.cs * self.world.ss
-        return (0 > coord[0] > mapWide
-                or 0 > coord[1] > mapHigh
-                or self.world.mapTileData[coord]['collisionTile'])
+        if coord in self.world.mapTileData:
+            return self.world.mapTileData[coord]['collisionTile']
+        return True
 
     def _return_is_lit(self, coord):
         return coord in self._litCoords
 
     def _set_lit(self,coord):
-        mapWide = self.world.chunksWide * self.world.cs * self.world.ss
-        mapHigh = self.world.chunksHigh * self.world.cs * self.world.ss
-        if (0 < coord[0] < mapWide or 0 < coord[1] < mapHigh):
+        if coord in self.world.mapTileData:
             self._litCoords.append(coord)
 
     def _cast_light(self, cx, cy, row, start, end, radius, xx, xy, yx, yy, id):
         if start < end:
             return
 
+        ss = self.world.ss
+        z = self.player.level
         radiusSquared = radius * radius
         for j in range(row, radius+1):
             dx, dy = -j-1, -j
             blocked = False
             while dx <=0:
                 dx += 1
-                x, y = (cx + dx * xx + dy * xy, cy + dx * yx + dy * yy)
+                x, y = (cx + ((dx*xx+dy*xy)*ss), cy + ((dx * yx + dy * yy)*ss))
                 lSlope, rSlope = (dx-0.5)/(dy+0.5), (dx+0.5)/(dy-0.5)
                 if start <  rSlope:
                     continue
@@ -185,18 +184,18 @@ class GameController(Controller):
                     break
                 else:
                     if dx*dx + dy*dy < radiusSquared:
-                        self._set_lit((x, y))
+                        self._set_lit((x, y, z))
                     if blocked:
-                        if self._return_collision((x, y)):
+                        if self._return_collision((x, y, z)):
                             newStart = rSlope
                             continue
                         else:
                             blocked = False
                             start = newStart
                     else:
-                        if self._return_collision((x, y)) and j < radius:
+                        if self._return_collision((x, y, z)) and j < radius:
                             blocked = True
-                            self._cast_light( cs,cy,j+1,start,lSlope,radius
+                            self._cast_light( cx,cy,j+1,start,lSlope,radius,
                                              xx,xy,yx,yy, id+1)
                             newStart = rSlope
             if blocked:
@@ -210,50 +209,51 @@ class GameController(Controller):
                 [0, 1, 1, 0, 0,-1,-1, 0],
                 [1, 0, 0, 1,-1, 0, 0,-1],
                 ]
-
-        self._visibleMapSprites = []
+        #self._visibleMapSprites = []
+        self._litCoords = []
 
         visibleCoords = []
 
         entityPosition = self.player.get_coords()
 
         for octant in range(8):
-        self._cast_light(
-                         entityPosition[0],
-                         entityPosition[1],
-                         1,
-                         1.0,
-                         0.0,
-                         self.player.lightLevel,
-                         multi[0][octant],
-                         multi[1][octant],
-                         multi[2][octant],
-                         multi[3][octant],
-                         0
-                         )
+            self._cast_light(
+                             entityPosition[0],
+                             entityPosition[1],
+                             1,
+                             1.0,
+                             0.0,
+                             self.player.lightLevel,
+                             multi[0][octant],
+                             multi[1][octant],
+                             multi[2][octant],
+                             multi[3][octant],
+                             0
+                             )
 
-        visibleCoords.append(entityPosition)
-        if entityPosition:
-            for r in range(1, self.player.lightLevel+1):
-                visibleCoords += utils.build_ring_coords(entityPosition[0],
-                                             entityPosition[1],
-                                             entityPosition[2],
-                                             r,
-                                             r
-                                             )
-            for coord in visibleCoords:
-                if coord in self.world.mapTileData:
+        self._litCoords.append(entityPosition)
+        # if entityPosition:
+        #     for r in range(1, self.player.lightLevel+1):
+        #         visibleCoords += utils.build_ring_coords(entityPosition[0],
+        #                                      entityPosition[1],
+        #                                      entityPosition[2],
+        #                                      r,
+        #                                      r
+        #                                      )
+        for coord in self._litCoords:
+            if coord in self.world.mapTileData:
+                if coord not in self._memoryCoords:
                     tileData = self.world.mapTileData[coord]
-                    if tileData["roomTile"]:
-                        self._visibleMapSprites.append(
-                                               pyglet.sprite.Sprite(
-                                                    img=tileData["sprite"],
-                                                    x=coord[0],
-                                                    y=coord[1],
-                                                    batch=self.batch,
-                                                    group=self.world.group
-                                                    )
-                                               )
+                    self._visibleMapSprites.append(
+                                           pyglet.sprite.Sprite(
+                                                img=tileData["sprite"],
+                                                x=coord[0],
+                                                y=coord[1],
+                                                batch=self.batch,
+                                                group=self.world.group
+                                                )
+                                           )
+                    self._memoryCoords.append(coord)
 
 
         # # Python 2.7   iteritems()
@@ -273,10 +273,12 @@ class GameController(Controller):
         print (coords)
         if not self._return_collision(coords):
             self.player.move(coords)
+            self._generate_fov()
 
     def change_player_angle(self, modifier):
         newAngle = self._new_player_angle(modifier)
         self.player.change_angle(newAngle)
+        self._generate_fov()
 
     def open_door(self):
         ss = CONFIG['spriteSize']
