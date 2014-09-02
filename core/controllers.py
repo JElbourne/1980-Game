@@ -167,15 +167,17 @@ class GameController(Controller):
         if (0 < coord[0] < mapWide or 0 < coord[1] < mapHigh):
             self._litCoords.append(coord)
 
-    def _cast_light(self, coord, row, start, end, radius, xx, xy, yx, yy, id):
+    def _cast_light(self, cx, cy, row, start, end, radius, xx, xy, yx, yy, id):
         if start < end:
             return
+
         radiusSquared = radius * radius
         for j in range(row, radius+1):
             dx, dy = -j-1, -j
             blocked = False
             while dx <=0:
-                pass
+                dx += 1
+                x, y = (cx + dx * xx + dy * xy, cy + dx * yx + dy * yy)
 
     def _generate_fov(self):
 
@@ -194,7 +196,8 @@ class GameController(Controller):
 
         for octant in range(8):
         self._cast_light(
-                         entityPosition,
+                         entityPosition[0],
+                         entityPosition[1],
                          1,
                          1.0,
                          0.0,
