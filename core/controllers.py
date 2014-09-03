@@ -89,7 +89,7 @@ class GameController(Controller):
         self.world = None
         self.player = None
 
-        self._visibleMapSprites = []
+        self._visibleMapSprites = {}
         self._litCoords = []
         self._memoryCoords = []
 
@@ -209,10 +209,7 @@ class GameController(Controller):
                 [0, 1, 1, 0, 0,-1,-1, 0],
                 [1, 0, 0, 1,-1, 0, 0,-1],
                 ]
-        #self._visibleMapSprites = []
         self._litCoords = []
-
-        visibleCoords = []
 
         entityPosition = self.player.get_coords()
 
@@ -232,28 +229,25 @@ class GameController(Controller):
                              )
 
         self._litCoords.append(entityPosition)
-        # if entityPosition:
-        #     for r in range(1, self.player.lightLevel+1):
-        #         visibleCoords += utils.build_ring_coords(entityPosition[0],
-        #                                      entityPosition[1],
-        #                                      entityPosition[2],
-        #                                      r,
-        #                                      r
-        #                                      )
+
         for coord in self._litCoords:
             if coord in self.world.mapTileData:
-                if coord not in self._memoryCoords:
-                    tileData = self.world.mapTileData[coord]
-                    self._visibleMapSprites.append(
-                                           pyglet.sprite.Sprite(
-                                                img=tileData["sprite"],
-                                                x=coord[0],
-                                                y=coord[1],
-                                                batch=self.batch,
-                                                group=self.world.group
-                                                )
-                                           )
-                    self._memoryCoords.append(coord)
+                tileData = self.world.mapTileData[coord]
+                spriteData = pyglet.sprite.Sprite(
+                                            img=tileData["sprite"],
+                                            x=coord[0],
+                                            y=coord[1],
+                                            batch=self.batch,
+                                            group=self.world.group
+                                            )
+                self._visibleMapSprites[coord] = spriteData
+
+        memoryCoords = self._visibleMapSprites.keys() - self._litCoords
+
+        for tileCoord in memoryCoords:
+            if tileCoord in self._visibleMapSprites:
+                tile = self._visibleMapSprites[tileCoord]
+                tile.opacity = 30
 
 
         # # Python 2.7   iteritems()
