@@ -203,28 +203,43 @@ class GameController(Controller):
 
     def _generate_fov(self):
 
-        multi = [
-                [1, 0, 0,-1,-1, 0, 0, 1],
-                [0, 1,-1, 0, 0,-1, 1, 0],
-                [0, 1, 1, 0, 0,-1,-1, 0],
-                [1, 0, 0, 1,-1, 0, 0,-1],
-                ]
-        self._litCoords = []
-
         entityPosition = self.player.get_coords()
 
-        for octant in range(8):
+        if self.world.mapTileData[entityPosition]["roomTile"]:
+            visionSections = 8
+            lightLevel = self.player.lightLevel
+            multi = [
+                    [1, 0, 0,-1,-1, 0, 0, 1],
+                    [0, 1,-1, 0, 0,-1, 1, 0],
+                    [0, 1, 1, 0, 0,-1,-1, 0],
+                    [1, 0, 0, 1,-1, 0, 0,-1],
+                    ]
+        else:
+            visionSections = 2
+            lightLevel = int(self.player.lightLevel//1.6)
+            if self.player.angle == 0:
+                multi = [[0, 0], [-1, -1], [1, -1], [0, 0]]
+            elif self.player.angle == 90:
+                multi = [[-1, 1], [0, 0], [0, 0], [-1, -1]]
+            elif self.player.angle == 180:
+                multi = [[0, 0], [1, 1], [-1, 1], [0, 0]]
+            else:
+                multi = [[1, -1], [0, 0], [0, 0], [1, 1]]
+
+        self._litCoords = []
+
+        for section in range(visionSections):
             self._cast_light(
                              entityPosition[0],
                              entityPosition[1],
                              1,
                              1.0,
                              0.0,
-                             self.player.lightLevel,
-                             multi[0][octant],
-                             multi[1][octant],
-                             multi[2][octant],
-                             multi[3][octant],
+                             lightLevel,
+                             multi[0][section],
+                             multi[1][section],
+                             multi[2][section],
+                             multi[3][section],
                              0
                              )
 
@@ -247,7 +262,7 @@ class GameController(Controller):
         for tileCoord in memoryCoords:
             if tileCoord in self._visibleMapSprites:
                 tile = self._visibleMapSprites[tileCoord]
-                tile.opacity = 30
+                tile.opacity = 20
 
 
         # # Python 2.7   iteritems()
@@ -261,12 +276,12 @@ class GameController(Controller):
         #                                         group=self.world.group
         #                                         )
         #                                    )
-
     def move_player(self, angle):
         coords = self._new_player_pos(angle)
         print (coords)
         if not self._return_collision(coords):
             self.player.move(coords)
+            self.player.change_angle(angle)
             self._generate_fov()
 
     def change_player_angle(self, modifier):
