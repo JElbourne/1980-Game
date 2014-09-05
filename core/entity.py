@@ -11,7 +11,7 @@ import pyglet
 from core import gfx
 
 
-class Enitity(object):
+class Entity(object):
     spriteSet = gfx.get_sprite_set()
     group = pyglet.graphics.OrderedGroup(3)
 
@@ -44,7 +44,7 @@ class Enitity(object):
         return None
 
 
-class Character(Enitity):
+class Character(Entity):
 
     group = pyglet.graphics.OrderedGroup(4)
 
@@ -104,3 +104,58 @@ class Player(Character):
             self.sprite.image = self._playerSpriteL
         elif self.angle == 270:
             self.sprite.image = self._playerSpriteD
+
+
+class Item(Entity):
+    """
+    Items are things you can actually pick up and use.
+    """
+
+    group = pyglet.graphics.OrderedGroup(4)
+
+    def __init__(self, ident, description, quantity, value,
+                 weight, x, y, spriteX, spriteY, batch, **kwargs):
+        super(Item, self).__init__(**kwargs)
+        self.ident = ident
+        self.description = description
+        self.quantity = quantity
+        self.weight = weight
+
+        self.value = value
+        self.netValue = int(self.value) * int(self.quantity)
+
+        spriteImg = self.spriteSet[spriteX][spriteY]
+        self.sprite = pyglet.sprite.Sprite(
+            spriteImg,
+            x=x,
+            y=y,
+            batch=batch,
+            group=self.group
+            )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
