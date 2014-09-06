@@ -133,6 +133,9 @@ class Item(Entity):
             group=self.group
             )
 
+    def recalc(self):
+        self.netValue = int(self.value) * int(self.quantity)
+
 
 
 
