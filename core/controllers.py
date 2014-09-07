@@ -14,6 +14,7 @@ import pyglet
 from core.views import MainMenuView
 from core.views import GameMapView
 from core.entity import Player
+from core.entity import Item
 from core.world import World
 from core.config import CONFIG
 
@@ -94,6 +95,7 @@ class GameController(Controller):
         self._visibleMapSprites = {}
         self._litCoords = []
         self._memoryCoords = []
+        self._entities = []
 
     def update(self, dt):
         pass
@@ -109,7 +111,8 @@ class GameController(Controller):
 
         print ("setting up player...")
         self.player = Player(x=spawnCoord[0], y=spawnCoord[1],batch=self.batch)
-        #
+        self._entities.append(self.player)
+
         print ("player is created!")
 
         itemIds = item_config.level_items[0]
@@ -120,7 +123,8 @@ class GameController(Controller):
                 item["x"] = itemSpawnCoord[0]
                 item["y"] = itemSpawnCoord[1]
                 item["level"] = itemSpawnCoord[2]
-                itemInstance = Item(**item)
+                item["batch"] = self.batch
+                self._entities.append(Item(**item))
 
 
         self._generate_fov()

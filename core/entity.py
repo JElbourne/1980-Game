@@ -124,9 +124,9 @@ class Item(Entity):
         self.value = value
         self.netValue = int(self.value) * int(self.quantity)
 
-        spriteImg = self.spriteSet[spriteX][spriteY]
+        self.spriteImg = self.spriteSet[spriteY][spriteX]
         self.sprite = pyglet.sprite.Sprite(
-            spriteImg,
+            self.spriteImg,
             x=x,
             y=y,
             batch=batch,
