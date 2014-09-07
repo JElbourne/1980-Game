@@ -193,7 +193,7 @@ class World(object):
                     setSprite = self._dirt
 
                 self.mapTileData[coord] = {
-                    "sprite": setSprite[1],
+                    "spriteImg": setSprite[1],
                     "name": setSprite[0],
                     "collisionTile": collisionTile,
                     "roomFloorTile": roomFloorTile,

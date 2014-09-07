@@ -220,10 +220,14 @@ class GameController(Controller):
 
     def _generate_fov(self):
         self._litCoords = []
+        entityCoords = {}
         for entity in self._entities:
             entityPosition = entity.get_coords()
 
-            if entity.lightLevel > 0:
+            if entity.lightLevel <= 0:
+                entityCoords[entityPosition] = entity
+                print (entityPosition)
+            else:
                 entity.sprite = pyglet.sprite.Sprite(
                     entity.spriteImg,
                     x=entity.x,
@@ -272,14 +276,22 @@ class GameController(Controller):
                 self._litCoords.append(entityPosition)
 
         for coord in self._litCoords:
+            tileData = None
             if coord in self.world.mapTileData:
                 tileData = self.world.mapTileData[coord]
+                group = self.world.group
+            if coord in entityCoords:
+                entity = entityCoords[coord]
+                group = entity.group
+                tileData = entity.__dict__
+
+            if tileData:
                 spriteData = pyglet.sprite.Sprite(
-                                            img=tileData["sprite"],
+                                            img=tileData["spriteImg"],
                                             x=coord[0],
                                             y=coord[1],
                                             batch=self.batch,
-                                            group=self.world.group
+                                            group=group
                                             )
                 self._visibleMapSprites[coord] = spriteData
 
@@ -323,7 +335,7 @@ class GameController(Controller):
             if coord in self.world.mapTileData:
                 tileData = self.world.mapTileData[coord]
                 if tileData['name'] == self.world.doorClosed[0]:
-                    tileData['sprite'] = self.world.doorOpen[1]
+                    tileData['spriteImg'] = self.world.doorOpen[1]
                     tileData['name'] = self.world.doorOpen[0]
                     tileData['collisionTile'] = False
                     self._generate_fov()
@@ -336,7 +348,7 @@ class GameController(Controller):
             if coord in self.world.mapTileData:
                 tileData = self.world.mapTileData[coord]
                 if tileData['name'] == self.world.doorOpen[0]:
-                    tileData['sprite'] = self.world.doorClosed[1]
+                    tileData['spriteImg'] = self.world.doorClosed[1]
                     tileData['name'] = self.world.doorClosed[0]
                     tileData['collisionTile'] = True
                     self._generate_fov()
