@@ -232,23 +232,24 @@ class GameController(Controller):
                     group=entity.group
                     )
 
-                if self.world.mapTileData[entityPosition]["roomTile"]:
-                    visionSections = 8
-                    lightLevel = self.player.lightLevel
-                    multi = [
-                            [1, 0, 0,-1,-1, 0, 0, 1],
-                            [0, 1,-1, 0, 0,-1, 1, 0],
-                            [0, 1, 1, 0, 0,-1,-1, 0],
-                            [1, 0, 0, 1,-1, 0, 0,-1],
-                            ]
-                else:
+                visionSections = 8
+                lightLevel = entity.lightLevel
+                multi = [
+                        [1, 0, 0,-1,-1, 0, 0, 1],
+                        [0, 1,-1, 0, 0,-1, 1, 0],
+                        [0, 1, 1, 0, 0,-1,-1, 0],
+                        [1, 0, 0, 1,-1, 0, 0,-1],
+                        ]
+
+                inRoom = self.world.mapTileData[entityPosition]["roomTile"]
+                if not inRoom and entity.__class__.__name__ == "Player":
                     visionSections = 2
-                    lightLevel = int(self.player.lightLevel//1.6)
-                    if self.player.angle == 0:
+                    lightLevel = int(entity.lightLevel//1.6)
+                    if entity.angle == 0:
                         multi = [[0, 0], [-1, -1], [1, -1], [0, 0]]
-                    elif self.player.angle == 90:
+                    elif entity.angle == 90:
                         multi = [[-1, 1], [0, 0], [0, 0], [-1, -1]]
-                    elif self.player.angle == 180:
+                    elif entity.angle == 180:
                         multi = [[0, 0], [1, 1], [-1, 1], [0, 0]]
                     else:
                         multi = [[1, -1], [0, 0], [0, 0], [1, 1]]

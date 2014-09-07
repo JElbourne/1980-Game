@@ -16,7 +16,7 @@ item_types = {
         "weight": 0.1,
         "name": "Torch",
         "hp": 1,
-        "lightLevel": 5,
+        "lightLevel": 0,
         "angle": 0,
         "spriteX": 0,
         "spriteY": 6
