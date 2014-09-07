@@ -219,48 +219,56 @@ class GameController(Controller):
                 break
 
     def _generate_fov(self):
-
-        entityPosition = self.player.get_coords()
-
-        if self.world.mapTileData[entityPosition]["roomTile"]:
-            visionSections = 8
-            lightLevel = self.player.lightLevel
-            multi = [
-                    [1, 0, 0,-1,-1, 0, 0, 1],
-                    [0, 1,-1, 0, 0,-1, 1, 0],
-                    [0, 1, 1, 0, 0,-1,-1, 0],
-                    [1, 0, 0, 1,-1, 0, 0,-1],
-                    ]
-        else:
-            visionSections = 2
-            lightLevel = int(self.player.lightLevel//1.6)
-            if self.player.angle == 0:
-                multi = [[0, 0], [-1, -1], [1, -1], [0, 0]]
-            elif self.player.angle == 90:
-                multi = [[-1, 1], [0, 0], [0, 0], [-1, -1]]
-            elif self.player.angle == 180:
-                multi = [[0, 0], [1, 1], [-1, 1], [0, 0]]
-            else:
-                multi = [[1, -1], [0, 0], [0, 0], [1, 1]]
-
         self._litCoords = []
+        for entity in self._entities:
+            entityPosition = entity.get_coords()
 
-        for section in range(visionSections):
-            self._cast_light(
-                             entityPosition[0],
-                             entityPosition[1],
-                             1,
-                             1.0,
-                             0.0,
-                             lightLevel,
-                             multi[0][section],
-                             multi[1][section],
-                             multi[2][section],
-                             multi[3][section],
-                             0
-                             )
+            if entity.lightLevel > 0:
+                entity.sprite = pyglet.sprite.Sprite(
+                    entity.spriteImg,
+                    x=entity.x,
+                    y=entity.y,
+                    batch=self.batch,
+                    group=entity.group
+                    )
 
-        self._litCoords.append(entityPosition)
+                if self.world.mapTileData[entityPosition]["roomTile"]:
+                    visionSections = 8
+                    lightLevel = self.player.lightLevel
+                    multi = [
+                            [1, 0, 0,-1,-1, 0, 0, 1],
+                            [0, 1,-1, 0, 0,-1, 1, 0],
+                            [0, 1, 1, 0, 0,-1,-1, 0],
+                            [1, 0, 0, 1,-1, 0, 0,-1],
+                            ]
+                else:
+                    visionSections = 2
+                    lightLevel = int(self.player.lightLevel//1.6)
+                    if self.player.angle == 0:
+                        multi = [[0, 0], [-1, -1], [1, -1], [0, 0]]
+                    elif self.player.angle == 90:
+                        multi = [[-1, 1], [0, 0], [0, 0], [-1, -1]]
+                    elif self.player.angle == 180:
+                        multi = [[0, 0], [1, 1], [-1, 1], [0, 0]]
+                    else:
+                        multi = [[1, -1], [0, 0], [0, 0], [1, 1]]
+
+                for section in range(visionSections):
+                    self._cast_light(
+                                     entityPosition[0],
+                                     entityPosition[1],
+                                     1,
+                                     1.0,
+                                     0.0,
+                                     lightLevel,
+                                     multi[0][section],
+                                     multi[1][section],
+                                     multi[2][section],
+                                     multi[3][section],
+                                     0
+                                     )
+
+                self._litCoords.append(entityPosition)
 
         for coord in self._litCoords:
             if coord in self.world.mapTileData:

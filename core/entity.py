@@ -24,13 +24,16 @@ class Entity(object):
         self.level = level
         self.angle = angle
 
+        self.x = 0
+        self.y = 0
+
         self.sprite = None
 
     def move(self, coords):
         # A change position method to update the instance sprite position
         if self.sprite:
-            self.sprite.x = coords[0]
-            self.sprite.y = coords[1]
+            self.sprite.x = self.x = coords[0]
+            self.sprite.y = self.y = coords[1]
             self.level = coords[2]
 
     def change_angle(self, angle):
@@ -39,9 +42,7 @@ class Entity(object):
         self._update_sprite_angle()
 
     def get_coords(self):
-        if self.sprite:
-            return self.sprite.x, self.sprite.y, self.level
-        return None
+        return self.x, self.y, self.level
 
 
 class Character(Entity):
@@ -86,13 +87,11 @@ class Player(Character):
         self._playerSpriteL = self.spriteSet[0][2]
         self._playerSpriteD = self.spriteSet[0][3]
 
-        self.sprite = pyglet.sprite.Sprite(
-            self._playerSpriteU,
-            x=x,
-            y=y,
-            batch=batch,
-            group=self.group
-            )
+        self.x = x
+        self.y = y
+
+        self.spriteImg = self._playerSpriteU
+
 
     def _update_sprite_angle(self):
         # Update the sprite used based on the current angle.
@@ -120,18 +119,14 @@ class Item(Entity):
         self.description = description
         self.quantity = quantity
         self.weight = weight
+        self.x = x
+        self.y = y
 
         self.value = value
         self.netValue = int(self.value) * int(self.quantity)
 
         self.spriteImg = self.spriteSet[spriteY][spriteX]
-        self.sprite = pyglet.sprite.Sprite(
-            self.spriteImg,
-            x=x,
-            y=y,
-            batch=batch,
-            group=self.group
-            )
+
 
     def recalc(self):
         self.netValue = int(self.value) * int(self.quantity)
