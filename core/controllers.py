@@ -16,7 +16,9 @@ from core.views import GameMapView
 from core.entity import Player
 from core.world import World
 from core.config import CONFIG
-from core import utils
+
+from config import item_config
+
 
 class Controller(object):
     def __init__(self, window):
@@ -109,6 +111,17 @@ class GameController(Controller):
         self.player = Player(x=spawnCoord[0], y=spawnCoord[1],batch=self.batch)
         #
         print ("player is created!")
+
+        itemIds = item_config.level_items[0]
+        for itemId in itemIds:
+            if itemId in item_config.item_types:
+                item = item_config.item_types[itemId]
+                itemSpawnCoord = self._pick_random_spawn_coords(level=0)
+                item["x"] = itemSpawnCoord[0]
+                item["y"] = itemSpawnCoord[1]
+                item["level"] = itemSpawnCoord[2]
+                itemInstance = Item(**item)
+
 
         self._generate_fov()
 
