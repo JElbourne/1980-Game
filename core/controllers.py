@@ -93,6 +93,7 @@ class GameController(Controller):
         self.player = None
 
         self._visibleMapSprites = {}
+        self._itemsData = {}
         self._litCoords = []
         self._memoryCoords = []
         self._entities = []
@@ -124,7 +125,9 @@ class GameController(Controller):
                 item["y"] = itemSpawnCoord[1]
                 item["level"] = itemSpawnCoord[2]
                 item["batch"] = self.batch
-                self._entities.append(Item(**item))
+                itemInstance = Item(**item)
+                self._entities.append(itemInstance)
+                self._itemsData[itemSpawnCoord] = itemInstance
 
 
         self._generate_fov()
@@ -352,6 +355,48 @@ class GameController(Controller):
                     tileData['name'] = self.world.doorClosed[0]
                     tileData['collisionTile'] = True
                     self._generate_fov()
+
+    def pick_up_item(self):
+        thereIsRoom = True
+        coords = self.player.get_coords()
+        if coords in self._itemsData:
+            item = self._itemsData[coords]
+            if item.weight <= self.player.strength:
+                backpack = self.player.backpack
+                if (backpack.weight + item.weight) <= backpack.maxWeight:
+                    if item not in backpack:
+                        thereIsRoom = backpack.capacity > len(backpack)
+                    if thereIsRoom:
+                        item.sprite.batch = None
+                        backpack.add(item)
+                        def self._itemsData[coords]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

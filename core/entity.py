@@ -9,7 +9,7 @@ Copyright (c) 2014 Jason Elbourne. All rights reserved.
 import pyglet
 
 from core import gfx
-
+from core.storage import Storage
 
 class Entity(object):
     spriteSet = gfx.get_sprite_set()
@@ -91,6 +91,8 @@ class Player(Character):
         self.y = y
 
         self.spriteImg = self._playerSpriteU
+
+        self.backpack = Storage(name="backpack")
 
 
     def _update_sprite_angle(self):
