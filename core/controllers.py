@@ -356,7 +356,7 @@ class GameController(Controller):
                     tileData['collisionTile'] = True
                     self._generate_fov()
 
-    def pick_up_item(self):
+    def pickup_item(self):
         thereIsRoom = True
         coords = self.player.get_coords()
         if coords in self._itemsData:
@@ -369,8 +369,19 @@ class GameController(Controller):
                     if thereIsRoom:
                         item.sprite.batch = None
                         backpack.add(item)
-                        def self._itemsData[coords]
+                        del self._itemsData[coords]
 
+
+    def drop_item(self):
+        coords = self.player.get_coords()
+        backpack = self.player.backpack
+        if backpack.activeItem:
+            item = backpack.activeItem
+            item.move(coords)
+            item.lightLight = item.maxLightLevel
+            item.sprite.batch = self.batch
+            backpack.remove(item)
+            self._itemsData[coords] = item
 
 
 

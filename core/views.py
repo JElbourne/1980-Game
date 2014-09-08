@@ -217,6 +217,11 @@ class GameMapView(View):
             self.controller.open_door()
         if symbol == key.RCTRL:
             self.controller.close_door()
+        ## Manipulate Items on Map
+        if symbol == key.UP:
+            self.controller.pickup_item()
+        if symbol == key.DOWN:
+            self.controller.drop_item()
 
     def on_draw(self):
         # GameMapView Requires many layers and so se override on_draw().

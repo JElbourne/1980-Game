@@ -27,7 +27,7 @@ class Storage(object):
         return item.ident in self.contents
 
     def __getitem__(self, item):
-        if item.indent in self.contents:
+        if item.ident in self.contents:
             return self.contents[item.ident]
         return None
 

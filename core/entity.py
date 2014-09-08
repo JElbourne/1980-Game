@@ -31,10 +31,12 @@ class Entity(object):
 
     def move(self, coords):
         # A change position method to update the instance sprite position
+        self.x = coords[0]
+        self.y = coords[1]
+        self.level = coords[2]
         if self.sprite:
-            self.sprite.x = self.x = coords[0]
-            self.sprite.y = self.y = coords[1]
-            self.level = coords[2]
+            self.sprite.x = self.x
+            self.sprite.y = self.y
 
     def change_angle(self, angle):
         # A change angle method to update the instance variable
