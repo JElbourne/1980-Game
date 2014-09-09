@@ -98,6 +98,8 @@ class GameController(Controller):
         self._memoryCoords = []
         self._entities = []
 
+        pyglet.clock.schedule_interval(self._decay_torches, 10)
+
     def update(self, dt):
         pass
 
@@ -133,6 +135,12 @@ class GameController(Controller):
         self._generate_fov()
 
         return True
+
+    def _decay_torches(self, dt):
+        for item in self._entities:
+            if item.name == "Torch":
+                if item.lightLevel > 0:
+                    item.lightLevel -= 1
 
     def _pick_random_spawn_coords(self, level=0):
         cSW = self.world.chunksWide * self.world.cs
@@ -370,6 +378,7 @@ class GameController(Controller):
                         item.sprite.batch = None
                         backpack.add(item)
                         del self._itemsData[coords]
+                        self._entities.remove(item)
 
 
     def drop_item(self):
@@ -378,10 +387,12 @@ class GameController(Controller):
         if backpack.activeItem:
             item = backpack.activeItem
             item.move(coords)
-            item.lightLight = item.maxLightLevel
+            item.lightLevel = item.maxLightLevel
+            print (item.maxLightLevel, item.lightLevel)
             item.sprite.batch = self.batch
             backpack.remove(item)
             self._itemsData[coords] = item
+            self._entities.append(item)
 
 
 
