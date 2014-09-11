@@ -16,6 +16,7 @@ from core.views import GameMapView
 from core.entity import Player
 from core.entity import Item
 from core.world import World
+from core.messages import MessageLog
 from core.config import CONFIG
 
 from config import item_config
@@ -105,8 +106,10 @@ class GameController(Controller):
 
     def setup(self):
         print ("game setting up...")
-        # The first view in the game will be the GameMapView
-        self.switch_view_class(GameMapView)
+
+        self.messages = MessageLog()
+        self.messages.add("Welcome to your doom!")
+        self.messages.add("You are not dead yet ???!")
         print ("setting up world...")
         self.world = World(self.window.width, self.window.height)
 
@@ -133,6 +136,9 @@ class GameController(Controller):
 
 
         self._generate_fov()
+
+        # The first view in the game will be the GameMapView
+        self.switch_view_class(GameMapView)
 
         return True
 
@@ -325,6 +331,19 @@ class GameController(Controller):
         #                                         group=self.world.group
         #                                         )
         #                                    )
+
+    def get_map_size(self):
+        width = self.world.chunksWide * self.world.cs * self.world.ss
+        height = self.world.chunksHigh * self.world.cs * self.world.ss
+        return width, height
+
+    def get_message_hud_size(self):
+        mapSize = self.get_map_size()
+        return self.window.width - mapSize[0], self.window.height - mapSize[1]
+
+    def get_messages(self, limit):
+        return self.messages.latest(limit)
+
     def move_player(self, angle):
         coords = self._new_player_pos(angle)
         print (coords)

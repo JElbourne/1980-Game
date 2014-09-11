@@ -189,8 +189,32 @@ class MainMenuView(MenuView):
 
 class GameMapView(View):
 
+    _messagesHudLabels = []
+
     def _messages_hud(self):
-        pass
+        hudSize = self.controller.get_message_hud_size()
+        mapSize = self.controller.get_map_size()
+        maxLines = (hudSize[1] // self.lineHeightNorm) - 1
+        messages = self.controller.get_messages(maxLines)
+
+        tempHolder = []
+
+        y = mapSize[1]
+
+        for message in messages:
+            print(message)
+            if len(self._messagesHudLabels) >= 1:
+                self._messagesHudLabels.pop().delete()
+            y += self.lineHeightNorm
+            message = pyglet.text.Label(str(message),
+                                        font_name=self.fontName,
+                                        font_size=self.fontSizeMd,
+                                        x=32, y=y,
+                                        batch=self.controller.batch)
+            tempHolder.append(message)
+
+        self._messagesHudLabels = list(tempHolder)
+
 
     def _health_hud(self):
         pass
