@@ -133,6 +133,7 @@ class Item(Entity):
 
 
     def recalc(self):
+        ## To be call to update the netValue based on a change in either a value or quantity.
         self.netValue = int(self.value) * int(self.quantity)
 
 

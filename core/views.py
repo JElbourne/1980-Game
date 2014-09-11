@@ -188,8 +188,24 @@ class MainMenuView(MenuView):
 
 
 class GameMapView(View):
+
+    def _messages_hud(self):
+        pass
+
+    def _health_hud(self):
+        pass
+
+    def _map_info_hud(self):
+        pass
+
+
     def setup(self):
         print ("preparing to display game map...")
+
+        self._messages_hud()
+        self._messages_hud()
+        self._health_hud()
+        self._map_info_hud()
 
     def update(self, dt):
         pass
