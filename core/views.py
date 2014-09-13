@@ -202,12 +202,17 @@ class GameMapView(View):
         for messageLabel in self._messagesHudLabels:
             messageLabel.delete()
 
+        i = 0
         for message in messages:
+            i += 1
+            alpha = 255//i
+
             y += self.lineHeightNorm
             self._messagesHudLabels.append(pyglet.text.Label(str(message),
                                         font_name=self.fontName,
                                         font_size=self.fontSizeMd,
                                         x=32, y=y,
+                                        color=(255,255,255,alpha),
                                         batch=self.controller.batch))
 
 
