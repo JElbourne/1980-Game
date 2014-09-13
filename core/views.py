@@ -233,6 +233,150 @@ class GameMapView(View):
                                         x=col1, y=y,
                                         width=hudSize[0],
                                         batch=self.controller.batch)
+        ## Class
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "class:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.class_),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Race
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "race:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.race),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Gender
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "gender:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.gender),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Strength
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "strength:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.strength),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Speed
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "speed:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.speed),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## intelligence
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "intelligence:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.intelligence),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Wisdom
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "wisdom:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.wisdom),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Steps
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "steps:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.steps),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
+        ## Gold
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "gold:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudSize[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.gold),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudSize[0]//2,
+                        batch=self.controller.batch)
 
 
     def _health_hud(self):
