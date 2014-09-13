@@ -344,7 +344,11 @@ class GameController(Controller):
 
     def get_message_hud_size(self):
         mapSize = self.get_map_size()
-        return self.window.width - mapSize[0], self.window.height - mapSize[1]
+        return mapSize[0], self.window.height - mapSize[1]
+
+    def get_player_info_hud_size(self):
+        mapSize = self.get_map_size()
+        return self.window.width - mapSize[0], self.window.height
 
     def get_messages(self, limit):
         return self.messages.latest(limit)

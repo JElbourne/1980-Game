@@ -213,7 +213,26 @@ class GameMapView(View):
                                         font_size=self.fontSizeMd,
                                         x=32, y=y,
                                         color=(255,255,255,alpha),
+                                        width=hudSize[0],
                                         batch=self.controller.batch))
+
+
+    def _player_info_hud(self):
+        hudSize = self.controller.get_player_info_hud_size()
+        mapSize = self.controller.get_map_size()
+        y = hudSize[1] - self.lineHeightLarge
+        x = mapSize[0]
+
+        col1 = x + 32
+        col2 = x + (hudSize[0]//2)
+
+        self.playerName = pyglet.text.Label(
+                                        str(self.controller.player.name),
+                                        font_name=self.fontName,
+                                        font_size=self.fontSizeLg,
+                                        x=col1, y=y,
+                                        width=hudSize[0],
+                                        batch=self.controller.batch)
 
 
     def _health_hud(self):
@@ -229,6 +248,7 @@ class GameMapView(View):
         print ("preparing to display game map...")
 
         self._messages_hud()
+        self._player_info_hud()
         self._health_hud()
         self._map_info_hud()
 
