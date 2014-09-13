@@ -108,8 +108,8 @@ class GameController(Controller):
         print ("game setting up...")
 
         self.messages = MessageLog()
-        self.messages.add("Welcome to your doom!")
-        self.messages.add("You are not dead yet ???!")
+        self._add_message("Welcome to your doom!")
+
         print ("setting up world...")
         self.world = World(self.window.width, self.window.height)
 
@@ -147,6 +147,11 @@ class GameController(Controller):
             if item.name == "Torch":
                 if item.lightLevel > 0:
                     item.lightLevel -= 1
+
+    def _add_message(self, message):
+        self.messages.add(str(message))
+        if self.current_view:
+            self.current_view.refresh_message_hud()
 
     def _pick_random_spawn_coords(self, level=0):
         cSW = self.world.chunksWide * self.world.cs
@@ -369,6 +374,7 @@ class GameController(Controller):
                     tileData['name'] = self.world.doorOpen[0]
                     tileData['collisionTile'] = False
                     self._generate_fov()
+                    self._add_message("You opened the door!")
 
     def close_door(self):
         ss = CONFIG['spriteSize']
@@ -382,6 +388,7 @@ class GameController(Controller):
                     tileData['name'] = self.world.doorClosed[0]
                     tileData['collisionTile'] = True
                     self._generate_fov()
+                    self._add_message("You closed the door!")
 
     def pickup_item(self):
         thereIsRoom = True
@@ -398,6 +405,7 @@ class GameController(Controller):
                         backpack.add(item)
                         del self._itemsData[coords]
                         self._entities.remove(item)
+                        self._add_message("You picked up a {}!".format(item.name))
 
 
     def drop_item(self):
@@ -412,36 +420,7 @@ class GameController(Controller):
             backpack.remove(item)
             self._itemsData[coords] = item
             self._entities.append(item)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            self._add_message("You dropped up a {}!".format(item.name))
 
     def push_handlers(self):
         if self.setup():

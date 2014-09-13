@@ -197,23 +197,18 @@ class GameMapView(View):
         maxLines = (hudSize[1] // self.lineHeightNorm) - 1
         messages = self.controller.get_messages(maxLines)
 
-        tempHolder = []
-
         y = mapSize[1]
 
+        for messageLabel in self._messagesHudLabels:
+            messageLabel.delete()
+
         for message in messages:
-            print(message)
-            if len(self._messagesHudLabels) >= 1:
-                self._messagesHudLabels.pop().delete()
             y += self.lineHeightNorm
-            message = pyglet.text.Label(str(message),
+            self._messagesHudLabels.append(pyglet.text.Label(str(message),
                                         font_name=self.fontName,
                                         font_size=self.fontSizeMd,
                                         x=32, y=y,
-                                        batch=self.controller.batch)
-            tempHolder.append(message)
-
-        self._messagesHudLabels = list(tempHolder)
+                                        batch=self.controller.batch))
 
 
     def _health_hud(self):
@@ -222,11 +217,12 @@ class GameMapView(View):
     def _map_info_hud(self):
         pass
 
+    def refresh_message_hud(self):
+        self._messages_hud()
 
     def setup(self):
         print ("preparing to display game map...")
 
-        self._messages_hud()
         self._messages_hud()
         self._health_hud()
         self._map_info_hud()
