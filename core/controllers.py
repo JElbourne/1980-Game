@@ -363,6 +363,18 @@ class GameController(Controller):
 
         return startX, startY, stopX, stopY
 
+    def get_health_hud_coords(self):
+        mapSize = self.get_map_size()
+        sectionHeight = self.window.height//3
+
+        startX = mapSize[0]
+        stopX = self.window.width
+
+        startY = sectionHeight
+        stopY = sectionHeight * 2
+
+        return startX, startY, stopX, stopY
+
     def get_map_info_hud_coords(self):
         mapSize = self.get_map_size()
         sectionHeight = self.window.height//3

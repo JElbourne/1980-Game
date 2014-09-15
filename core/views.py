@@ -14,9 +14,13 @@ from pyglet.window import key
 
 from core.static_text import MAIN_MENU_TEXT
 from core.config import CONFIG
+from core import gfx
 
 
 class View(object):
+
+    spriteSet = gfx.get_sprite_set()
+
     def __init__(self, controller):
         super(View, self).__init__()
 
@@ -384,7 +388,42 @@ class GameMapView(View):
 
 
     def _health_hud(self):
-        pass
+        hudCoords = self.controller.get_health_hud_coords()
+        y = hudCoords[3] - self.lineHeightLarge
+        x = hudCoords[0]
+
+        hudWidth = hudCoords[2] - hudCoords[0]
+
+        col1 = x + 16
+        col2 = x + (hudWidth//2)
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "Health Information",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+
+        goodColorImg = self.spriteSet[0][4]
+        badColorImg = self.spriteSet[0][5]
+
+        y -= self.lineHeightLarge
+
+        self.goodColorSprite = pyglet.sprite.Sprite(
+                    goodColorImg,
+                    x=col1,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(2)
+                    )
+        self.badColorSprite = pyglet.sprite.Sprite(
+                    badColorImg,
+                    x=col1,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(1)
+                    )
 
     def _map_info_hud(self):
         hudCoords = self.controller.get_map_info_hud_coords()
