@@ -346,9 +346,29 @@ class GameController(Controller):
         mapSize = self.get_map_size()
         return mapSize[0], self.window.height - mapSize[1]
 
-    def get_player_info_hud_size(self):
+    def get_player_info_hud_coords(self):
         mapSize = self.get_map_size()
-        return self.window.width - mapSize[0], self.window.height
+        sectionHeight = self.window.height//3
+
+        startX = mapSize[0]
+        stopX = self.window.width
+
+        startY = self.window.height - sectionHeight
+        stopY = self.window.height
+
+        return startX, startY, stopX, stopY
+
+    def get_map_info_hud_coords(self):
+        mapSize = self.get_map_size()
+        sectionHeight = self.window.height//3
+
+        startX = mapSize[0]
+        stopX = self.window.width
+
+        startY = 0
+        stopY = sectionHeight
+
+        return startX, startY, stopX,
 
     def get_messages(self, limit):
         return self.messages.latest(limit)

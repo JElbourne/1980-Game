@@ -126,8 +126,11 @@ class World(object):
             j = 0
             while True:
                 j += 1
+                ## CHANGE
+                # doorCoord = random.choice(wallCoords)
                 doorIndex = random.randint(0, len(wallCoords)-1)
                 doorCoord = wallCoords[doorIndex]
+                ## END CHANGE
                 if int(doorIndex) > 0 and int(doorIndex+1) < len(wallCoords):
                     before = wallCoords[doorIndex-1]
                     after = wallCoords[doorIndex+1]
