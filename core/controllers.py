@@ -368,7 +368,7 @@ class GameController(Controller):
         startY = 0
         stopY = sectionHeight
 
-        return startX, startY, stopX,
+        return startX, startY, stopX, stopY
 
     def get_messages(self, limit):
         return self.messages.latest(limit)
