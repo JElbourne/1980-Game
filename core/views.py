@@ -396,6 +396,8 @@ class GameMapView(View):
         col1 = x + 16
         col2 = x + (hudWidth//2)
 
+        tileInfrontData, tileOnData = self.controller.get_tile_hud_data()
+
         ## Level
         y -= self.lineHeightSmall
         pyglet.text.Label(
@@ -411,6 +413,23 @@ class GameMapView(View):
                         font_size=self.fontSizeSm,
                         x=col2, y=y,
                         width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+
+        y -= self.lineHeightSmall
+        self.tileInfrontData = pyglet.text.Label(
+                        "In Front:  {}".format(tileInfrontData['name']),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        y -= self.lineHeightSmall
+        self.tileOnData = pyglet.text.Label(
+                        "Standing On:  {}".format(tileOnData['name']),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
                         batch=self.controller.batch)
 
     def refresh_message_hud(self):

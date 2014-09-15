@@ -41,7 +41,6 @@ class Entity(object):
     def change_angle(self, angle):
         # A change angle method to update the instance variable
         self.angle = angle
-        self._update_sprite_angle()
 
     def get_coords(self):
         return self.x, self.y, self.level
@@ -100,13 +99,18 @@ class Player(Character):
     def _update_sprite_angle(self):
         # Update the sprite used based on the current angle.
         if self.angle == 0:
-            self.sprite.image = self._playerSpriteR
+            self.spriteImg = self._playerSpriteR
         elif self.angle == 90:
-            self.sprite.image = self._playerSpriteU
+            self.spriteImg = self._playerSpriteU
         elif self.angle == 180:
-            self.sprite.image = self._playerSpriteL
+            self.spriteImg = self._playerSpriteL
         elif self.angle == 270:
-            self.sprite.image = self._playerSpriteD
+            self.spriteImg = self._playerSpriteD
+
+    def change_angle(self, angle):
+        # A change angle method to update the instance variable
+        self.angle = angle
+        self._update_sprite_angle()
 
 
 class Item(Entity):

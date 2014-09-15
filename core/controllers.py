@@ -337,6 +337,11 @@ class GameController(Controller):
         #                                         )
         #                                    )
 
+    def _update_tile_hud_data(self):
+        tileInfrontData, tileOnData = self.get_tile_hud_data()
+        self.current_view.tileInfrontData.text = "In Front:  {}".format(tileInfrontData['name'])
+        self.current_view.tileOnData.text = "Standing On:  {}".format(tileOnData['name'])
+
     def get_map_size(self):
         width = self.world.chunksWide * self.world.cs * self.world.ss
         height = self.world.chunksHigh * self.world.cs * self.world.ss
@@ -373,6 +378,32 @@ class GameController(Controller):
     def get_messages(self, limit):
         return self.messages.latest(limit)
 
+    def get_tile_hud_data(self):
+        tileInFrontData = None
+        tileOnData = None
+        playerCoords = self.player.get_coords()
+        playerAngle = self.player.angle
+
+        tileCoords = list(playerCoords)
+
+        if playerAngle == 0:
+            tileCoords[0] += self.world.ss
+        elif playerAngle == 90:
+            tileCoords[1] += self.world.ss
+        elif playerAngle == 180:
+            tileCoords[0] -= self.world.ss
+        else:
+            tileCoords[1] -= self.world.ss
+
+        inFrontCoord = tuple(tileCoords)
+
+        if inFrontCoord in  self.world.mapTileData:
+            tileInFrontData = self.world.mapTileData[inFrontCoord]
+        if playerCoords in  self.world.mapTileData:
+            tileOnData = self.world.mapTileData[playerCoords]
+
+        return tileInFrontData, tileOnData
+
     def move_player(self, angle):
         coords = self._new_player_pos(angle)
         print (coords)
@@ -380,11 +411,13 @@ class GameController(Controller):
             self.player.move(coords)
             self.player.change_angle(angle)
             self._generate_fov()
+            self._update_tile_hud_data()
 
     def change_player_angle(self, modifier):
         newAngle = self._new_player_angle(modifier)
         self.player.change_angle(newAngle)
         self._generate_fov()
+        self._update_tile_hud_data()
 
     def open_door(self):
         ss = CONFIG['spriteSize']
@@ -399,6 +432,7 @@ class GameController(Controller):
                     tileData['collisionTile'] = False
                     self._generate_fov()
                     self._add_message("You opened the door!")
+                    self._update_tile_hud_data()
 
     def close_door(self):
         ss = CONFIG['spriteSize']
@@ -413,6 +447,7 @@ class GameController(Controller):
                     tileData['collisionTile'] = True
                     self._generate_fov()
                     self._add_message("You closed the door!")
+                    self._update_tile_hud_data()
 
     def pickup_item(self):
         thereIsRoom = True
@@ -430,6 +465,7 @@ class GameController(Controller):
                         del self._itemsData[coords]
                         self._entities.remove(item)
                         self._add_message("You picked up a {}!".format(item.name))
+                        self._update_tile_hud_data()
 
 
     def drop_item(self):
@@ -445,6 +481,7 @@ class GameController(Controller):
             self._itemsData[coords] = item
             self._entities.append(item)
             self._add_message("You dropped up a {}!".format(item.name))
+            self._update_tile_hud_data()
 
     def push_handlers(self):
         if self.setup():
