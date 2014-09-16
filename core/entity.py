@@ -52,9 +52,10 @@ class Character(Entity):
 
     def __init__(self, armour=20, speed=30, strength=10, hunger=10, gold=0,
                  race="human", class_="Rogue", alignment="Neutral",
-                 gender="Male", intelligence=10, wisdom=10, **kwargs):
-        super(Character, self).__init__(name="Vladic", hp=17, lightLevel=8,
-                                        level=0, angle=0, **kwargs)
+                 gender="Male", intelligence=10, wisdom=10, name="Vladic",
+                 hp=17, lightLevel=8, level=0, angle=0, **kwargs):
+        super(Character, self).__init__(name, hp, lightLevel, level, angle,
+                                        **kwargs)
         self.armour = armour
         self.maxArmour = armour
         self.speed = speed
@@ -79,7 +80,7 @@ class Player(Character):
 
     group = pyglet.graphics.OrderedGroup(5)
 
-    def __init__(self, x, y, batch, *args, **kwargs):
+    def __init__(self, x, y, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
 
         # Set the different player sprites from the spriteSet
@@ -112,6 +113,19 @@ class Player(Character):
         self.angle = angle
         self._update_sprite_angle()
 
+class Enemy(Character):
+    """
+    Enemy is character that will attack player.
+    """
+
+    group = pyglet.graphics.OrderedGroup(4)
+
+    def __init__(self, x, y, spriteX, spriteY, **kwargs):
+        super(Enemy, self).__init__(**kwargs)
+        self.x = x
+        self.y = y
+
+        self.spriteImg = self.spriteSet[spriteY][spriteX]
 
 class Item(Entity):
     """
@@ -121,7 +135,7 @@ class Item(Entity):
     group = pyglet.graphics.OrderedGroup(4)
 
     def __init__(self, ident, description, quantity, value,
-                 weight, x, y, spriteX, spriteY, batch, **kwargs):
+                 weight, x, y, spriteX, spriteY, **kwargs):
         super(Item, self).__init__(**kwargs)
         self.ident = ident
         self.description = description

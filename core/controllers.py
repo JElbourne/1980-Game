@@ -14,12 +14,14 @@ import pyglet
 from core.views import MainMenuView
 from core.views import GameMapView
 from core.entity import Player
+from core.entity import Enemy
 from core.entity import Item
 from core.world import World
 from core.messages import MessageLog
 from core.config import CONFIG
 
 from config import item_config
+from config import enemy_config
 
 
 class Controller(object):
@@ -116,7 +118,7 @@ class GameController(Controller):
         spawnCoord = self._pick_random_spawn_coords(level=0)
 
         print ("setting up player...")
-        self.player = Player(x=spawnCoord[0], y=spawnCoord[1],batch=self.batch)
+        self.player = Player(x=spawnCoord[0], y=spawnCoord[1])
         self._entities.append(self.player)
 
         print ("player is created!")
@@ -129,10 +131,22 @@ class GameController(Controller):
                 item["x"] = itemSpawnCoord[0]
                 item["y"] = itemSpawnCoord[1]
                 item["level"] = itemSpawnCoord[2]
-                item["batch"] = self.batch
                 itemInstance = Item(**item)
                 self._entities.append(itemInstance)
                 self._itemsData[itemSpawnCoord] = itemInstance
+                itemIds = item_config.level_items[0]
+
+        enemyIds = enemy_config.level_enemies[0]
+        for enemyId in enemyIds:
+            if enemyId in enemy_config.enemy_types:
+                enemy = enemy_config.enemy_types[enemyId]
+                enemySpawnCoord = self._pick_random_spawn_coords(level=0)
+                enemy["x"] = enemySpawnCoord[0]
+                enemy["y"] = enemySpawnCoord[1]
+                enemy["level"] = enemySpawnCoord[2]
+                enemyInstance = Enemy(**enemy)
+                self._entities.append(enemyInstance)
+                #self._enemiesData[enemySpawnCoord] = enemyInstance
 
 
         self._generate_fov()
