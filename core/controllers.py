@@ -136,17 +136,20 @@ class GameController(Controller):
                 self._itemsData[itemSpawnCoord] = itemInstance
                 itemIds = item_config.level_items[0]
 
-        enemyIds = enemy_config.level_enemies[0]
-        for enemyId in enemyIds:
-            if enemyId in enemy_config.enemy_types:
-                enemy = enemy_config.enemy_types[enemyId]
-                enemySpawnCoord = self._pick_random_spawn_coords(level=0)
-                enemy["x"] = enemySpawnCoord[0]
-                enemy["y"] = enemySpawnCoord[1]
-                enemy["level"] = enemySpawnCoord[2]
-                enemyInstance = Enemy(**enemy)
-                self._entities.append(enemyInstance)
-                #self._enemiesData[enemySpawnCoord] = enemyInstance
+        enemyTuples = enemy_config.level_enemies[0]
+        for enemyTuple in enemyTuples:
+            if enemyTuple[0] in enemy_config.enemy_types:
+                enemy = enemy_config.enemy_types[enemyTuple[0]]
+                for i in range(enemyTuple[1]):
+                    enemyCoord = self._pick_random_spawn_coords(
+                                                        level=0,
+                                                        inRoomRequired=False)
+                    enemy["x"] = enemyCoord[0]
+                    enemy["y"] = enemyCoord[1]
+                    enemy["level"] = enemyCoord[2]
+                    enemyInstance = Enemy(**enemy)
+                    self._entities.append(enemyInstance)
+                    #self._enemiesData[enemyCoord] = enemyInstance
 
 
         self._generate_fov()
@@ -167,7 +170,7 @@ class GameController(Controller):
         if self.current_view:
             self.current_view.refresh_message_hud()
 
-    def _pick_random_spawn_coords(self, level=0):
+    def _pick_random_spawn_coords(self, level=0, inRoomRequired=True):
         cSW = self.world.chunksWide * self.world.cs
         cSH = self.world.chunksHigh * self.world.cs
         maxLoop = cSW * cSH
@@ -180,8 +183,12 @@ class GameController(Controller):
             spawnCoord = (coordX*self.world.ss, coordY*self.world.ss, level)
             if spawnCoord in self.world.mapTileData:
                 tileData = self.world.mapTileData[spawnCoord]
-                if tileData["roomFloorTile"]:
-                    break
+                if inRoomRequired:
+                    if tileData["roomFloorTile"]:
+                        break
+                else:
+                    if not tileData["collisionTile"]:
+                        break
 
             if j >= maxLoop:
                 spawnCoord = (256,256,level)

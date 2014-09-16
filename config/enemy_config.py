@@ -4,11 +4,11 @@ enemy_config.py
 """
 
 level_enemies = {
-    0: [1]
+    0: [("hobgoblin", 5)]
 }
 
 enemy_types = {
-    1: {
+    "hobgoblin": {
         "name":"Hobgoblin",
         "armour":1,
         "speed":10,
@@ -22,7 +22,7 @@ enemy_types = {
         "intelligence":2,
         "wisdom":1,
         "hp":8,
-        "lightLevel":1,
+        "lightLevel":0,
         "angle":0,
         "spriteX": 6,
         "spriteY": 0
