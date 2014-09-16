@@ -395,8 +395,11 @@ class GameMapView(View):
         hudWidth = hudCoords[2] - hudCoords[0]
 
         col1 = x + 16
-        col2 = x + (hudWidth//2)
-        y -= self.lineHeightSmall
+        col2 = x + 112
+
+        player = self.controller.player
+
+        y -= self.lineHeightLarge
         pyglet.text.Label(
                         "Health Information",
                         font_name=self.fontName,
@@ -408,22 +411,83 @@ class GameMapView(View):
         goodColorImg = self.spriteSet[0][4]
         badColorImg = self.spriteSet[0][5]
 
-        y -= self.lineHeightLarge
+        maxWidth = hudWidth - (128)
 
-        self.goodColorSprite = pyglet.sprite.Sprite(
+        healthWidth = ((player.hp)* maxWidth) // player.maxHp
+
+        goodColorImg.width = healthWidth
+        badColorImg.width = maxWidth
+
+        y -= self.lineHeightSmall
+
+        self.hpSprite = pyglet.sprite.Sprite(
                     goodColorImg,
-                    x=col1,
+                    x=col2,
                     y=y,
                     batch=self.controller.batch,
                     group=pyglet.graphics.OrderedGroup(2)
                     )
-        self.badColorSprite = pyglet.sprite.Sprite(
+        self.maxHpSprite = pyglet.sprite.Sprite(
                     badColorImg,
-                    x=col1,
+                    x=col2,
                     y=y,
                     batch=self.controller.batch,
                     group=pyglet.graphics.OrderedGroup(1)
                     )
+        pyglet.text.Label(
+                        "{} / {}".format(player.hp, player.maxHp),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y+1,
+                        width=(hudCoords[0]//2)-(col1),
+                        bold=True,
+                        batch=self.controller.batch,
+                        group=pyglet.graphics.OrderedGroup(3))
+
+        y -= self.lineHeightLarge
+        pyglet.text.Label(
+                        "Armour Information",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+
+        goodColorImg = self.spriteSet[0][4]
+        badColorImg = self.spriteSet[0][5]
+
+        maxWidth = hudWidth - (128)
+
+        amourWidth = ((player.armour)* maxWidth) // player.maxArmour
+
+        goodColorImg.width = amourWidth
+        badColorImg.width = maxWidth
+
+        y -= self.lineHeightSmall
+
+        self.armourSprite = pyglet.sprite.Sprite(
+                    goodColorImg,
+                    x=col2,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(2)
+                    )
+        self.maxArmourSprite = pyglet.sprite.Sprite(
+                    badColorImg,
+                    x=col2,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(1)
+                    )
+        pyglet.text.Label(
+                        "{} / {}".format(player.armour, player.maxArmour),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y+1,
+                        width=(hudCoords[0]//2)-(col1),
+                        bold=True,
+                        batch=self.controller.batch,
+                        group=pyglet.graphics.OrderedGroup(3))
 
     def _map_info_hud(self):
         hudCoords = self.controller.get_map_info_hud_coords()

@@ -53,7 +53,7 @@ class Character(Entity):
     def __init__(self, armour=20, speed=30, strength=10, hunger=10, gold=0,
                  race="human", class_="Rogue", alignment="Neutral",
                  gender="Male", intelligence=10, wisdom=10, **kwargs):
-        super(Character, self).__init__(name="Vladic", hp="17", lightLevel=8,
+        super(Character, self).__init__(name="Vladic", hp=17, lightLevel=8,
                                         level=0, angle=0, **kwargs)
         self.armour = armour
         self.maxArmour = armour
