@@ -102,6 +102,7 @@ class GameController(Controller):
         self._entities = []
 
         pyglet.clock.schedule_interval(self._decay_torches, 10)
+        pyglet.clock.schedule_interval(self._enemy_ai, 1)
 
     def update(self, dt):
         pass
@@ -165,6 +166,29 @@ class GameController(Controller):
                 if item.lightLevel > 0:
                     item.lightLevel -= 1
 
+    def _enemy_ai(self, dt):
+        for entity in self._entities:
+            if entity.__class__.__name__ == "Enemy":
+                j = 0
+                while True:
+                    j += 1
+                    direction = random.choice([0, 90, 180, 270])
+                    completed = self._move_entity(entity, direction)
+                    if completed:
+                        break
+                    if j >= 4:
+                        break
+
+
+    def _move_entity(self, entity, angle):
+        currentCoords = (entity.x, entity.y, entity.level)
+        coords = self._new_entity_pos(currentCoords, angle)
+        if not self._return_collision(coords):
+            entity.move(coords)
+            entity.change_angle(angle)
+            return True
+        return False
+
     def _add_message(self, message):
         self.messages.add(str(message))
         if self.current_view:
@@ -195,21 +219,21 @@ class GameController(Controller):
                 break
         return spawnCoord
 
-    def _new_player_angle(self, modifier):
-        curAngle = self.player.angle
-        newAngle = (curAngle + modifier) % 360
+    def _new_entity_angle(self, currentAngle, modifier):
+        newAngle = (currentAngle + modifier) % 360
         return newAngle
 
-    def _new_player_pos(self, angle):
-        x, y, z = self.player.sprite.x, self.player.sprite.y, self.player.level
+    def _new_entity_pos(self, coords, angle):
+        x, y, z = coords[0], coords[1], coords[2]
+        ss = self.world.ss
         if angle == 0:
-            x += 16
+            x += ss
         elif angle == 90:
-            y += 16
+            y += ss
         elif angle == 180:
-            x -= 16
+            x -= ss
         elif angle == 270:
-            y -= 16
+            y -= ss
         return (x, y, z)
 
     def _return_collision(self, coord):
@@ -438,16 +462,13 @@ class GameController(Controller):
         return tileInFrontData, tileOnData
 
     def move_player(self, angle):
-        coords = self._new_player_pos(angle)
-        print (coords)
-        if not self._return_collision(coords):
-            self.player.move(coords)
-            self.player.change_angle(angle)
+        completed = self._move_entity(self.player, angle)
+        if completed:
             self._generate_fov()
             self._update_tile_hud_data()
 
     def change_player_angle(self, modifier):
-        newAngle = self._new_player_angle(modifier)
+        newAngle = self._new_entity_angle(self.player.angle, modifier)
         self.player.change_angle(newAngle)
         self._generate_fov()
         self._update_tile_hud_data()

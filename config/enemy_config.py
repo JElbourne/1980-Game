@@ -22,7 +22,7 @@ enemy_types = {
         "intelligence":2,
         "wisdom":1,
         "hp":8,
-        "lightLevel":0,
+        "lightLevel":1,
         "angle":0,
         "spriteX": 6,
         "spriteY": 0
