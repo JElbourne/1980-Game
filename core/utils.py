@@ -1,9 +1,22 @@
 
 """
 utils.py
+
+Created by Jason Elbourne on 2014-09-17.
+Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
+import math
+
 from core.config import CONFIG
+
+
+def distance_between_coords(fromCoord, targetCoord):
+    """ Use the Pythagorean Theorem to determine distance """
+    dx = targetCoord[0] - fromCoord[0]
+    dy = targetCoord[1] - fromCoord[1]
+    return int(round(math.sqrt(dx**2 + dy**2)))
+
 
 def build_ring_coords(x, y, z, rw, rh):
     """

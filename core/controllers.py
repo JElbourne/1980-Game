@@ -19,6 +19,7 @@ from core.entity import Item
 from core.world import World
 from core.messages import MessageLog
 from core.config import CONFIG
+from core import utils
 
 from config import item_config
 from config import enemy_config
@@ -171,6 +172,11 @@ class GameController(Controller):
             if entity.__class__.__name__ == "Enemy":
                 j = 0
                 while True:
+                    distance = utils.distance_between_coords(
+                                                    entity.get_coords(),
+                                                    self.player.get_coords()
+                                                    )
+                    print distance
                     j += 1
                     direction = random.choice([0, 90, 180, 270])
                     completed = self._move_entity(entity, direction)

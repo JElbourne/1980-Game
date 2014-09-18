@@ -1,6 +1,9 @@
 
 """
 messages.py
+
+Created by Jason Elbourne on 2014-09-17.
+Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
 
