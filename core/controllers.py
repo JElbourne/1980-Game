@@ -172,13 +172,20 @@ class GameController(Controller):
             if entity.__class__.__name__ == "Enemy":
                 j = 0
                 while True:
-                    distance = utils.distance_between_coords(
-                                                    entity.get_coords(),
-                                                    self.player.get_coords()
-                                                    )
-                    print distance
                     j += 1
-                    direction = random.choice([0, 90, 180, 270])
+                    dx, dy, distance = utils.compare_coords(
+                        entity.get_coords(),
+                        self.player.get_coords()
+                        )
+                    if distance < 400:
+                        axis = random.choice([(dx, 0, 180), (dy, 90, 270)])
+                        if axis[0] > 0:
+                            direction = axis[1]
+                        else:
+                            direction = axis[2]
+
+                    else:
+                        direction = random.choice([0, 90, 180, 270])
                     completed = self._move_entity(entity, direction)
                     if completed:
                         break
