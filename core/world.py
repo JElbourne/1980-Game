@@ -1,6 +1,9 @@
 
 """
 world.py
+
+Created by Jason Elbourne on 2014-09-17.
+Copyright (c) 2014 Jason Elbourne. All rights reserved.
 """
 
 import random
@@ -126,8 +129,11 @@ class World(object):
             j = 0
             while True:
                 j += 1
+                ## CHANGE
+                # doorCoord = random.choice(wallCoords)
                 doorIndex = random.randint(0, len(wallCoords)-1)
                 doorCoord = wallCoords[doorIndex]
+                ## END CHANGE
                 if int(doorIndex) > 0 and int(doorIndex+1) < len(wallCoords):
                     before = wallCoords[doorIndex-1]
                     after = wallCoords[doorIndex+1]
@@ -193,7 +199,7 @@ class World(object):
                     setSprite = self._dirt
 
                 self.mapTileData[coord] = {
-                    "sprite": setSprite[1],
+                    "spriteImg": setSprite[1],
                     "name": setSprite[0],
                     "collisionTile": collisionTile,
                     "roomFloorTile": roomFloorTile,

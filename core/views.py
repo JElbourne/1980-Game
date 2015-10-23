@@ -14,9 +14,13 @@ from pyglet.window import key
 
 from core.static_text import MAIN_MENU_TEXT
 from core.config import CONFIG
+from core import gfx
 
 
 class View(object):
+
+    spriteSet = gfx.get_sprite_set()
+
     def __init__(self, controller):
         super(View, self).__init__()
 
@@ -157,7 +161,10 @@ class MainMenuView(MenuView):
         y -= (self.lineHeightLarge*2)
         menuIntros = MAIN_MENU_TEXT["mainMenuIntros"]
         # Randomly select the menu Intro to show
+        ## CHANGE
+        # line = random.choice(menuIntros)
         line = menuIntros[random.randint(0,  len(menuIntros)-1)]
+        ## END CHANGE
         pyglet.text.Label(line, font_name=self.fontName,
                           font_size=self.fontSizeLg, bold=True,
                           x=32, y=y, batch=self.batch)
@@ -188,8 +195,356 @@ class MainMenuView(MenuView):
 
 
 class GameMapView(View):
+
+    _messagesHudLabels = []
+
+    def _messages_hud(self):
+        hudSize = self.controller.get_message_hud_size()
+        mapSize = self.controller.get_map_size()
+        maxLines = (hudSize[1] // self.lineHeightNorm) - 1
+        messages = self.controller.get_messages(maxLines)
+
+        y = mapSize[1]
+
+        for messageLabel in self._messagesHudLabels:
+            messageLabel.delete()
+
+        i = 0
+        for message in messages:
+            i += 1
+            alpha = 255//i
+
+            y += self.lineHeightNorm
+            self._messagesHudLabels.append(pyglet.text.Label(str(message),
+                                        font_name=self.fontName,
+                                        font_size=self.fontSizeMd,
+                                        x=32, y=y,
+                                        color=(255,255,255,alpha),
+                                        width=hudSize[0],
+                                        batch=self.controller.batch))
+
+
+    def _player_info_hud(self):
+        hudCoords = self.controller.get_player_info_hud_coords()
+        y = hudCoords[3] - self.lineHeightLarge
+        x = hudCoords[0]
+
+        hudWidth = hudCoords[2] - hudCoords[0]
+
+        col1 = x + 16
+        col2 = x + (hudWidth//2)
+
+        self.playerName = pyglet.text.Label(
+                                        str(self.controller.player.name),
+                                        font_name=self.fontName,
+                                        font_size=self.fontSizeLg,
+                                        x=col1, y=y,
+                                        width=hudCoords[0],
+                                        batch=self.controller.batch)
+        ## Class
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "class:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerClass = pyglet.text.Label(
+                        str(self.controller.player.class_),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Race
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "race:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerRace = pyglet.text.Label(
+                        str(self.controller.player.race),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Gender
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "gender:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerGender = pyglet.text.Label(
+                        str(self.controller.player.gender),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Strength
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "strength:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerStrength = pyglet.text.Label(
+                        str(self.controller.player.strength),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Speed
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "speed:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerSpeed = pyglet.text.Label(
+                        str(self.controller.player.speed),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## intelligence
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "intell:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerIntelligence = pyglet.text.Label(
+                        str(self.controller.player.intelligence),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Wisdom
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "wisdom:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerWisdom = pyglet.text.Label(
+                        str(self.controller.player.wisdom),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Steps
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "steps:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerSteps = pyglet.text.Label(
+                        str(self.controller.player.steps),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+        ## Gold
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "gold:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerGold = pyglet.text.Label(
+                        str(self.controller.player.gold),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+
+
+    def _health_hud(self):
+        hudCoords = self.controller.get_health_hud_coords()
+        y = hudCoords[3] - self.lineHeightLarge
+        x = hudCoords[0]
+
+        hudWidth = hudCoords[2] - hudCoords[0]
+
+        col1 = x + 16
+        col2 = x + 112
+
+        player = self.controller.player
+
+        y -= self.lineHeightLarge
+        pyglet.text.Label(
+                        "Health Information",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+
+        goodColorImg = self.spriteSet[0][4]
+        badColorImg = self.spriteSet[0][5]
+
+        maxWidth = hudWidth - (128)
+
+        healthWidth = ((player.hp)* maxWidth) // player.maxHp
+
+        goodColorImg.width = healthWidth
+        badColorImg.width = maxWidth
+
+        y -= self.lineHeightSmall
+
+        self.hpSprite = pyglet.sprite.Sprite(
+                    goodColorImg,
+                    x=col2,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(2)
+                    )
+        self.maxHpSprite = pyglet.sprite.Sprite(
+                    badColorImg,
+                    x=col2,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(1)
+                    )
+        pyglet.text.Label(
+                        "{} / {}".format(player.hp, player.maxHp),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y+1,
+                        width=(hudCoords[0]//2)-(col1),
+                        bold=True,
+                        batch=self.controller.batch,
+                        group=pyglet.graphics.OrderedGroup(3))
+
+        y -= self.lineHeightLarge
+        pyglet.text.Label(
+                        "Armour Information",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+
+        goodColorImg = self.spriteSet[0][4]
+        badColorImg = self.spriteSet[0][5]
+
+        maxWidth = hudWidth - (128)
+
+        amourWidth = ((player.armour)* maxWidth) // player.maxArmour
+
+        goodColorImg.width = amourWidth
+        badColorImg.width = maxWidth
+
+        y -= self.lineHeightSmall
+
+        self.armourSprite = pyglet.sprite.Sprite(
+                    goodColorImg,
+                    x=col2,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(2)
+                    )
+        self.maxArmourSprite = pyglet.sprite.Sprite(
+                    badColorImg,
+                    x=col2,
+                    y=y,
+                    batch=self.controller.batch,
+                    group=pyglet.graphics.OrderedGroup(1)
+                    )
+        pyglet.text.Label(
+                        "{} / {}".format(player.armour, player.maxArmour),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y+1,
+                        width=(hudCoords[0]//2)-(col1),
+                        bold=True,
+                        batch=self.controller.batch,
+                        group=pyglet.graphics.OrderedGroup(3))
+
+    def _map_info_hud(self):
+        hudCoords = self.controller.get_map_info_hud_coords()
+        y = hudCoords[3] - self.lineHeightLarge
+        x = hudCoords[0]
+
+        hudWidth = hudCoords[2] - hudCoords[0]
+
+        col1 = x + 16
+        col2 = x + (hudWidth//2)
+
+        tileInfrontData, tileOnData = self.controller.get_tile_hud_data()
+
+        ## Level
+        y -= self.lineHeightSmall
+        pyglet.text.Label(
+                        "level:",
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        self.playerLevel = pyglet.text.Label(
+                        str(self.controller.player.level),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col2, y=y,
+                        width=hudCoords[0]//2,
+                        batch=self.controller.batch)
+
+        y -= self.lineHeightSmall
+        self.tileInfrontData = pyglet.text.Label(
+                        "In Front:  {}".format(tileInfrontData['name']),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+        y -= self.lineHeightSmall
+        self.tileOnData = pyglet.text.Label(
+                        "Standing On:  {}".format(tileOnData['name']),
+                        font_name=self.fontName,
+                        font_size=self.fontSizeSm,
+                        x=col1, y=y,
+                        width=(hudCoords[0]//2)-(col1),
+                        batch=self.controller.batch)
+
+    def refresh_message_hud(self):
+        self._messages_hud()
+
     def setup(self):
         print ("preparing to display game map...")
+
+        self._messages_hud()
+        self._player_info_hud()
+        self._health_hud()
+        self._map_info_hud()
 
     def update(self, dt):
         pass
@@ -217,6 +572,11 @@ class GameMapView(View):
             self.controller.open_door()
         if symbol == key.RCTRL:
             self.controller.close_door()
+        ## Manipulate Items on Map
+        if symbol == key.UP:
+            self.controller.pickup_item()
+        if symbol == key.DOWN:
+            self.controller.drop_item()
 
     def on_draw(self):
         # GameMapView Requires many layers and so se override on_draw().

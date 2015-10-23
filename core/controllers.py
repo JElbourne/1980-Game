@@ -14,9 +14,16 @@ import pyglet
 from core.views import MainMenuView
 from core.views import GameMapView
 from core.entity import Player
+from core.entity import Enemy
+from core.entity import Item
 from core.world import World
+from core.messages import MessageLog
 from core.config import CONFIG
 from core import utils
+
+from config import item_config
+from config import enemy_config
+
 
 class Controller(object):
     def __init__(self, window):
@@ -89,32 +96,118 @@ class GameController(Controller):
         self.world = None
         self.player = None
 
-        self._visibleMapSprites = []
+        self._visibleMapSprites = {}
+        self._itemsData = {}
         self._litCoords = []
         self._memoryCoords = []
+        self._entities = []
+
+        pyglet.clock.schedule_interval(self._decay_torches, 10)
+        pyglet.clock.schedule_interval(self._enemy_ai, 1)
 
     def update(self, dt):
         pass
 
     def setup(self):
         print ("game setting up...")
-        # The first view in the game will be the GameMapView
-        self.switch_view_class(GameMapView)
+
+        self.messages = MessageLog()
+        self._add_message("Welcome to your doom!")
+
         print ("setting up world...")
         self.world = World(self.window.width, self.window.height)
 
         spawnCoord = self._pick_random_spawn_coords(level=0)
 
         print ("setting up player...")
-        self.player = Player(x=spawnCoord[0], y=spawnCoord[1],batch=self.batch)
-        #
+        self.player = Player(x=spawnCoord[0], y=spawnCoord[1])
+        self._entities.append(self.player)
+
         print ("player is created!")
+
+        itemIds = item_config.level_items[0]
+        for itemId in itemIds:
+            if itemId in item_config.item_types:
+                item = item_config.item_types[itemId]
+                itemSpawnCoord = self._pick_random_spawn_coords(level=0)
+                item["x"] = itemSpawnCoord[0]
+                item["y"] = itemSpawnCoord[1]
+                item["level"] = itemSpawnCoord[2]
+                itemInstance = Item(**item)
+                self._entities.append(itemInstance)
+                self._itemsData[itemSpawnCoord] = itemInstance
+                itemIds = item_config.level_items[0]
+
+        enemyTuples = enemy_config.level_enemies[0]
+        for enemyTuple in enemyTuples:
+            if enemyTuple[0] in enemy_config.enemy_types:
+                enemy = enemy_config.enemy_types[enemyTuple[0]]
+                for i in range(enemyTuple[1]):
+                    enemyCoord = self._pick_random_spawn_coords(
+                                                        level=0,
+                                                        inRoomRequired=False)
+                    enemy["x"] = enemyCoord[0]
+                    enemy["y"] = enemyCoord[1]
+                    enemy["level"] = enemyCoord[2]
+                    enemyInstance = Enemy(**enemy)
+                    self._entities.append(enemyInstance)
+                    #self._enemiesData[enemyCoord] = enemyInstance
+
 
         self._generate_fov()
 
+        # The first view in the game will be the GameMapView
+        self.switch_view_class(GameMapView)
+
         return True
 
-    def _pick_random_spawn_coords(self, level=0):
+    def _decay_torches(self, dt):
+        for item in self._entities:
+            if item.name == "Torch":
+                if item.lightLevel > 0:
+                    item.lightLevel -= 1
+
+    def _enemy_ai(self, dt):
+        for entity in self._entities:
+            if entity.__class__.__name__ == "Enemy":
+                j = 0
+                while True:
+                    j += 1
+                    dx, dy, distance = utils.compare_coords(
+                        entity.get_coords(),
+                        self.player.get_coords()
+                        )
+                    if distance < 400:
+                        axis = random.choice([(dx, 0, 180), (dy, 90, 270)])
+                        if axis[0] > 0:
+                            direction = axis[1]
+                        else:
+                            direction = axis[2]
+
+                    else:
+                        direction = random.choice([0, 90, 180, 270])
+                    completed = self._move_entity(entity, direction)
+                    if completed:
+                        break
+                    if j >= 4:
+                        break
+
+
+    def _move_entity(self, entity, angle):
+        currentCoords = (entity.x, entity.y, entity.level)
+        coords = self._new_entity_pos(currentCoords, angle)
+        if not self._return_collision(coords):
+            entity.move(coords)
+            entity.change_angle(angle)
+            return True
+        return False
+
+    def _add_message(self, message):
+        self.messages.add(str(message))
+        if self.current_view:
+            self.current_view.refresh_message_hud()
+
+    def _pick_random_spawn_coords(self, level=0, inRoomRequired=True):
         cSW = self.world.chunksWide * self.world.cs
         cSH = self.world.chunksHigh * self.world.cs
         maxLoop = cSW * cSH
@@ -127,29 +220,33 @@ class GameController(Controller):
             spawnCoord = (coordX*self.world.ss, coordY*self.world.ss, level)
             if spawnCoord in self.world.mapTileData:
                 tileData = self.world.mapTileData[spawnCoord]
-                if tileData["roomFloorTile"]:
-                    break
+                if inRoomRequired:
+                    if tileData["roomFloorTile"]:
+                        break
+                else:
+                    if not tileData["collisionTile"]:
+                        break
 
             if j >= maxLoop:
                 spawnCoord = (256,256,level)
                 break
         return spawnCoord
 
-    def _new_player_angle(self, modifier):
-        curAngle = self.player.angle
-        newAngle = (curAngle + modifier) % 360
+    def _new_entity_angle(self, currentAngle, modifier):
+        newAngle = (currentAngle + modifier) % 360
         return newAngle
 
-    def _new_player_pos(self, angle):
-        x, y, z = self.player.sprite.x, self.player.sprite.y, self.player.level
+    def _new_entity_pos(self, coords, angle):
+        x, y, z = coords[0], coords[1], coords[2]
+        ss = self.world.ss
         if angle == 0:
-            x += 16
+            x += ss
         elif angle == 90:
-            y += 16
+            y += ss
         elif angle == 180:
-            x -= 16
+            x -= ss
         elif angle == 270:
-            y -= 16
+            y -= ss
         return (x, y, z)
 
     def _return_collision(self, coord):
@@ -202,58 +299,88 @@ class GameController(Controller):
                 break
 
     def _generate_fov(self):
-
-        multi = [
-                [1, 0, 0,-1,-1, 0, 0, 1],
-                [0, 1,-1, 0, 0,-1, 1, 0],
-                [0, 1, 1, 0, 0,-1,-1, 0],
-                [1, 0, 0, 1,-1, 0, 0,-1],
-                ]
-        #self._visibleMapSprites = []
         self._litCoords = []
+        entityCoords = {}
+        for entity in self._entities:
+            entityPosition = entity.get_coords()
 
-        visibleCoords = []
+            if entity.lightLevel <= 0:
+                entityCoords[entityPosition] = entity
+                print (entityPosition)
+            else:
+                entity.sprite = pyglet.sprite.Sprite(
+                    entity.spriteImg,
+                    x=entity.x,
+                    y=entity.y,
+                    batch=self.batch,
+                    group=entity.group
+                    )
 
-        entityPosition = self.player.get_coords()
+                visionSections = 8
+                lightLevel = entity.lightLevel
+                multi = [
+                        [1, 0, 0,-1,-1, 0, 0, 1],
+                        [0, 1,-1, 0, 0,-1, 1, 0],
+                        [0, 1, 1, 0, 0,-1,-1, 0],
+                        [1, 0, 0, 1,-1, 0, 0,-1],
+                        ]
 
-        for octant in range(8):
-            self._cast_light(
-                             entityPosition[0],
-                             entityPosition[1],
-                             1,
-                             1.0,
-                             0.0,
-                             self.player.lightLevel,
-                             multi[0][octant],
-                             multi[1][octant],
-                             multi[2][octant],
-                             multi[3][octant],
-                             0
-                             )
+                inRoom = self.world.mapTileData[entityPosition]["roomTile"]
+                if not inRoom and entity.__class__.__name__ == "Player":
+                    visionSections = 2
+                    lightLevel = int(entity.lightLevel//1.6)
+                    if entity.angle == 0:
+                        multi = [[0, 0], [-1, -1], [1, -1], [0, 0]]
+                    elif entity.angle == 90:
+                        multi = [[-1, 1], [0, 0], [0, 0], [-1, -1]]
+                    elif entity.angle == 180:
+                        multi = [[0, 0], [1, 1], [-1, 1], [0, 0]]
+                    else:
+                        multi = [[1, -1], [0, 0], [0, 0], [1, 1]]
 
-        self._litCoords.append(entityPosition)
-        # if entityPosition:
-        #     for r in range(1, self.player.lightLevel+1):
-        #         visibleCoords += utils.build_ring_coords(entityPosition[0],
-        #                                      entityPosition[1],
-        #                                      entityPosition[2],
-        #                                      r,
-        #                                      r
-        #                                      )
+                for section in range(visionSections):
+                    self._cast_light(
+                                     entityPosition[0],
+                                     entityPosition[1],
+                                     1,
+                                     1.0,
+                                     0.0,
+                                     lightLevel,
+                                     multi[0][section],
+                                     multi[1][section],
+                                     multi[2][section],
+                                     multi[3][section],
+                                     0
+                                     )
+
+                self._litCoords.append(entityPosition)
+
         for coord in self._litCoords:
+            tileData = None
             if coord in self.world.mapTileData:
-                if coord not in self._memoryCoords:
-                    tileData = self.world.mapTileData[coord]
-                    self._visibleMapSprites.append(
-                                           pyglet.sprite.Sprite(
-                                                img=tileData["sprite"],
-                                                x=coord[0],
-                                                y=coord[1],
-                                                batch=self.batch,
-                                                group=self.world.group
-                                                )
-                                           )
-                    self._memoryCoords.append(coord)
+                tileData = self.world.mapTileData[coord]
+                group = self.world.group
+            if coord in entityCoords:
+                entity = entityCoords[coord]
+                group = entity.group
+                tileData = entity.__dict__
+
+            if tileData:
+                spriteData = pyglet.sprite.Sprite(
+                                            img=tileData["spriteImg"],
+                                            x=coord[0],
+                                            y=coord[1],
+                                            batch=self.batch,
+                                            group=group
+                                            )
+                self._visibleMapSprites[coord] = spriteData
+
+        memoryCoords = self._visibleMapSprites.keys() - self._litCoords
+
+        for tileCoord in memoryCoords:
+            if tileCoord in self._visibleMapSprites:
+                tile = self._visibleMapSprites[tileCoord]
+                tile.opacity = 20
 
 
         # # Python 2.7   iteritems()
@@ -268,17 +395,96 @@ class GameController(Controller):
         #                                         )
         #                                    )
 
+    def _update_tile_hud_data(self):
+        tileInfrontData, tileOnData = self.get_tile_hud_data()
+        self.current_view.tileInfrontData.text = "In Front:  {}".format(tileInfrontData['name'])
+        self.current_view.tileOnData.text = "Standing On:  {}".format(tileOnData['name'])
+
+    def get_map_size(self):
+        width = self.world.chunksWide * self.world.cs * self.world.ss
+        height = self.world.chunksHigh * self.world.cs * self.world.ss
+        return width, height
+
+    def get_message_hud_size(self):
+        mapSize = self.get_map_size()
+        return mapSize[0], self.window.height - mapSize[1]
+
+    def get_player_info_hud_coords(self):
+        mapSize = self.get_map_size()
+        sectionHeight = self.window.height//3
+
+        startX = mapSize[0]
+        stopX = self.window.width
+
+        startY = self.window.height - sectionHeight
+        stopY = self.window.height
+
+        return startX, startY, stopX, stopY
+
+    def get_health_hud_coords(self):
+        mapSize = self.get_map_size()
+        sectionHeight = self.window.height//3
+
+        startX = mapSize[0]
+        stopX = self.window.width
+
+        startY = sectionHeight
+        stopY = sectionHeight * 2
+
+        return startX, startY, stopX, stopY
+
+    def get_map_info_hud_coords(self):
+        mapSize = self.get_map_size()
+        sectionHeight = self.window.height//3
+
+        startX = mapSize[0]
+        stopX = self.window.width
+
+        startY = 0
+        stopY = sectionHeight
+
+        return startX, startY, stopX, stopY
+
+    def get_messages(self, limit):
+        return self.messages.latest(limit)
+
+    def get_tile_hud_data(self):
+        tileInFrontData = None
+        tileOnData = None
+        playerCoords = self.player.get_coords()
+        playerAngle = self.player.angle
+
+        tileCoords = list(playerCoords)
+
+        if playerAngle == 0:
+            tileCoords[0] += self.world.ss
+        elif playerAngle == 90:
+            tileCoords[1] += self.world.ss
+        elif playerAngle == 180:
+            tileCoords[0] -= self.world.ss
+        else:
+            tileCoords[1] -= self.world.ss
+
+        inFrontCoord = tuple(tileCoords)
+
+        if inFrontCoord in  self.world.mapTileData:
+            tileInFrontData = self.world.mapTileData[inFrontCoord]
+        if playerCoords in  self.world.mapTileData:
+            tileOnData = self.world.mapTileData[playerCoords]
+
+        return tileInFrontData, tileOnData
+
     def move_player(self, angle):
-        coords = self._new_player_pos(angle)
-        print (coords)
-        if not self._return_collision(coords):
-            self.player.move(coords)
+        completed = self._move_entity(self.player, angle)
+        if completed:
             self._generate_fov()
+            self._update_tile_hud_data()
 
     def change_player_angle(self, modifier):
-        newAngle = self._new_player_angle(modifier)
+        newAngle = self._new_entity_angle(self.player.angle, modifier)
         self.player.change_angle(newAngle)
         self._generate_fov()
+        self._update_tile_hud_data()
 
     def open_door(self):
         ss = CONFIG['spriteSize']
@@ -288,10 +494,12 @@ class GameController(Controller):
             if coord in self.world.mapTileData:
                 tileData = self.world.mapTileData[coord]
                 if tileData['name'] == self.world.doorClosed[0]:
-                    tileData['sprite'] = self.world.doorOpen[1]
+                    tileData['spriteImg'] = self.world.doorOpen[1]
                     tileData['name'] = self.world.doorOpen[0]
                     tileData['collisionTile'] = False
                     self._generate_fov()
+                    self._add_message("You opened the door!")
+                    self._update_tile_hud_data()
 
     def close_door(self):
         ss = CONFIG['spriteSize']
@@ -301,14 +509,46 @@ class GameController(Controller):
             if coord in self.world.mapTileData:
                 tileData = self.world.mapTileData[coord]
                 if tileData['name'] == self.world.doorOpen[0]:
-                    tileData['sprite'] = self.world.doorClosed[1]
+                    tileData['spriteImg'] = self.world.doorClosed[1]
                     tileData['name'] = self.world.doorClosed[0]
                     tileData['collisionTile'] = True
                     self._generate_fov()
+                    self._add_message("You closed the door!")
+                    self._update_tile_hud_data()
+
+    def pickup_item(self):
+        thereIsRoom = True
+        coords = self.player.get_coords()
+        if coords in self._itemsData:
+            item = self._itemsData[coords]
+            if item.weight <= self.player.strength:
+                backpack = self.player.backpack
+                if (backpack.weight + item.weight) <= backpack.maxWeight:
+                    if item not in backpack:
+                        thereIsRoom = backpack.capacity > len(backpack)
+                    if thereIsRoom:
+                        item.sprite.batch = None
+                        backpack.add(item)
+                        del self._itemsData[coords]
+                        self._entities.remove(item)
+                        self._add_message("You picked up a {}!".format(item.name))
+                        self._update_tile_hud_data()
 
 
-
-
+    def drop_item(self):
+        coords = self.player.get_coords()
+        backpack = self.player.backpack
+        if backpack.activeItem:
+            item = backpack.activeItem
+            item.move(coords)
+            item.lightLevel = item.maxLightLevel
+            print (item.maxLightLevel, item.lightLevel)
+            item.sprite.batch = self.batch
+            backpack.remove(item)
+            self._itemsData[coords] = item
+            self._entities.append(item)
+            self._add_message("You dropped up a {}!".format(item.name))
+            self._update_tile_hud_data()
 
     def push_handlers(self):
         if self.setup():
